@@ -1,0 +1,127 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: EDD Software License Manager\n"
+"POT-Creation-Date: 2015-10-05 13:13+0330\n"
+"PO-Revision-Date: 2015-10-05 13:14+0330\n"
+"Last-Translator: wp-master.ir <wp@wp-master.ir>\n"
+"Language-Team: wp-master.ir <wp@wp-master.ir>\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: edd-software-license-manager.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: includes/emails.php:25 includes/purchase.php:306
+msgid "Your Licenses"
+msgstr "لایسنس(های) شما"
+
+#: includes/emails.php:25 includes/purchase.php:306
+msgid "Item"
+msgstr "محصول"
+
+#: includes/emails.php:25 includes/purchase.php:306
+msgid "License"
+msgstr "لایسنس"
+
+#: includes/meta-boxes.php:39
+msgid "Enable licensing for this download."
+msgstr "فعال سازی لایسنس برای این محصول"
+
+#: includes/meta-boxes.php:45
+msgid "license renewal period(yearly) , enter 0 for lifetime."
+msgstr "مدت اعتبار لایسنس(سالیانه)،برای مقدار نامحدود 0 وارد کنید"
+
+#: includes/meta-boxes.php:48
+msgid "How many sites can be activated trough a single license key?"
+msgstr "چه تعداد سایت می تواند از طریق این لایسنس فعال شود؟"
+
+#: includes/purchase.php:97
+msgid "License could not be created: Invalid sites allowed number."
+msgstr ""
+"لایسنس نمی تواند ساخته شود،تعداد سایتهای اجازه داده شده غیر معتبر وارد شده "
+"است"
+
+#: includes/purchase.php:201
+msgid "License Key(s) generated"
+msgstr "لایسنس(ها) ایجاد شدند"
+
+#: includes/purchase.php:208
+msgid "License Key(s) could not be created."
+msgstr "لایسنس(ها) نمی توانند ایجاد شوند"
+
+#: includes/settings.php:19
+msgid "License Manager"
+msgstr "مدیریت لایسنس"
+
+#: includes/settings.php:36
+msgid "Software License Manager Settings"
+msgstr "تنظیمات پلاگین SLM"
+
+#: includes/settings.php:40
+msgid "API URL"
+msgstr "لینک API"
+
+#: includes/settings.php:49
+msgid "Secret Key"
+msgstr "کد رمز پلاگین SLM"
+
+#: wc-software-license-manager.php:127
+msgid ""
+"Seamless integration between Woocommerce and Software License "
+"Manager(adopted from EDD Software License Manager -thanks to flowdee "
+"<coder@flowdee.de>)"
+msgstr ""
+"یکپارچه سازی ووکارس با پلاگین مدیریت لایسنس(برگرفته از پلاگین EDD Software "
+"License Manager - سپاس از نویسنده آن flowdee <coder@flowdee.de> )"
+
+#: wc-software-license-manager.php:128
+msgid "WC Software License Manager"
+msgstr "یکپارچه کننده لایسنس منجیر با  ووکامرس"
+
+#~ msgid "Sites allowed"
+#~ msgstr "سایتهای اجازه داده شده"
+
+#~ msgid "Enable Licensing"
+#~ msgstr "فعال سازی لایسنس گذاری برای این محصول"
+
+#~ msgid "EDD Software License Manager Settings"
+#~ msgstr "EDD Software License Manager Einstellungen"
+
+#~ msgid "Configure EDD Software License Manager Settings"
+#~ msgstr "EDD Software License Manager Einstellungen"
+
+#~ msgid ""
+#~ "Enter the url to the WordPress installation which hosts the Software "
+#~ "License Manager plugin."
+#~ msgstr ""
+#~ "Die Adresse zu der WordPress Installation, mit dem aktivieren Software "
+#~ "License Manager Plugin."
+
+#~ msgid "API Secret"
+#~ msgstr "API Secret"
+
+#~ msgid "Secret Key for License Creation"
+#~ msgstr "Secret Key for License Creation"
+
+#~ msgid "Software License Manager API credentials missing or invalid."
+#~ msgstr ""
+#~ "Software License Manager API Zugangsdaten wurden nicht eingetragen oder "
+#~ "sind fehlerhaft."
+
+#~ msgid "EDD Software License Manager"
+#~ msgstr "EDD Software License Manager"
+
+#~ msgid "http://flowdee.de"
+#~ msgstr "http://flowdee.de"
+
+#~ msgid "flowdee"
+#~ msgstr "flowdee"

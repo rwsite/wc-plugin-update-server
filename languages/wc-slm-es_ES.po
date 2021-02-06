@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WC Software License Manager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: Fri Oct 30 2015 11:09:17 GMT+0100 (CET)\n"
+"PO-Revision-Date: Fri Oct 30 2015 11:29:00 GMT+0100 (CET)\n"
+"Last-Translator: Art Project Group <info@artprojectgroup.com>\n"
+"Language-Team: \n"
+"Language: Spanish (Spain)\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
+"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
+"_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
+"esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
+"esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
+"X-Generator: Loco - https://localise.biz/\n"
+"X-Loco-Target-Locale: es_ES"
+
+#. Name of the plugin
+msgid "WC Software License Manager"
+msgstr "WC Software License Manager"
+
+#. URI of the plugin
+msgid "http://wp-master.ir"
+msgstr "http://wp-master.ir"
+
+#. Description of the plugin
+msgid ""
+"Seamless integration between Woocommerce and Software License "
+"Manager(adopted from EDD Software License Manager -thanks to flowdee "
+"<coder@flowdee.de>)"
+msgstr ""
+"La perfecta integración entre WooCommerce y Software License Manager "
+"(adaptada a partir de EDD Software License Manager - gracias a flowdee "
+"<coder@flowdee.de>)"
+
+#. Author of the plugin
+msgid "Omid Shamlu"
+msgstr "Omid Shamlu"
+
+#: ../includes/settings.php:19
+msgid "License Manager"
+msgstr "Gestor de licencias"
+
+#: ../includes/settings.php:36
+msgid "Software License Manager Settings"
+msgstr "Configuración de Software License Manager"
+
+#: ../includes/settings.php:40
+msgid "API URL"
+msgstr "API URL"
+
+#: ../includes/settings.php:49
+msgid "Secret Key"
+msgstr "Clave secreta"
+
+#: ../includes/purchase.php:100
+msgid "License could not be created: Invalid sites allowed number."
+msgstr "La licencia no puede ser creada: "
+
+#: ../includes/purchase.php:204
+msgid "License Key(s) generated"
+msgstr "Licencia generada."
+
+#: ../includes/purchase.php:211
+msgid "License Key(s) could not be created."
+msgstr "La licencia no puede ser creada."
+
+#: ../includes/purchase.php:309 ../includes/emails.php:25
+msgid "Your Licenses"
+msgstr "Tus licencias"
+
+#: ../includes/purchase.php:309 ../includes/emails.php:25
+msgid "Item"
+msgstr "Producto"
+
+#: ../includes/purchase.php:309 ../includes/emails.php:25
+msgid "License"
+msgstr "Licencia"
+
+#: ../includes/meta-boxes.php:39
+msgid "Enable licensing for this download."
+msgstr "Licencia disponible para esta descarga"
+
+#: ../includes/meta-boxes.php:44
+msgid "license renewal period(yearly) , enter 0 for lifetime."
+msgstr "Periodo de renovación (anual). Introduce 0 para licencia perpetua."
+
+#: ../includes/meta-boxes.php:48
+msgid "How many sites can be activated trough a single license key?"
+msgstr "¿Cuantos sitios pueden activarse con esta licencia?"
