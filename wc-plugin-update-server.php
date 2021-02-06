@@ -67,7 +67,7 @@ class Lic_Manager_Plugin {
         if (!function_exists('WC') || !class_exists('WPPUS_License_Server')) {
             add_action( 'admin_notices', function(){ ?>
                 <div class="notice notice-error is-dismissible"><p>
-                        <?php echo __('Woocommerce or WPPUS_License_Server is not activated. To work thi plugin, you need to install and activate WooCommerce and WPPUS_License_Server plugins.', 'wc-pus'); ?>
+                        <?php echo __('Woocommerce or WPPUS_License_Server is not activated. To work this plugin, you need to install and activate WooCommerce and WPPUS_License_Server plugins.', 'wc-pus'); ?>
                 </div>
             <?php });
             return;
@@ -91,7 +91,6 @@ class Lic_Manager_Plugin {
     public function load_textdomain() {
         // Load the default language files
         load_plugin_textdomain('wc-pus', false, 'wc-lic-server-integration/languages');
-        __('Seamless integration between Woocommerce and Software License Manager(adopted from EDD Software License Manager -thanks to flowdee <coder@flowdee.de>)', 'wc-pus');
         __('WC Software License Manager', 'wc-pus');
     }
 

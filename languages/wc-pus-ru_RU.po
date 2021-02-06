@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WC Plugin Update Server integration\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-06 12:22+0000\n"
+"PO-Revision-Date: 2021-02-06 12:27+0000\n"
+"Last-Translator: \n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
+"n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.5.0; wp-5.6.1\n"
+"X-Domain: wc-pus"
+
+#. Author of the plugin
+msgid "Aleksey Tikhomirov"
+msgstr "Алексей Тихомиров"
+
+#: includes/Lic_Manager.php:190
+msgid "Expire Date"
+msgstr "Дата истечения"
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "http://rwsite.ru"
+msgstr "http://rwsite.ru"
+
+#: includes/Lic_Manager.php:158 includes/Lic_Manager.php:190
+msgid "Item"
+msgstr "Позиция"
+
+#: includes/Lic_Manager.php:158 includes/Lic_Manager.php:190
+msgid "License"
+msgstr "Лицензия"
+
+#: includes/Lic_Manager.php:72
+msgid "License could not be created: Invalid product slug."
+msgstr "Не удалось создать лицензию: недопустимый slug."
+
+#: includes/Lic_Manager.php:78
+msgid "License could not be created: Invalid product type."
+msgstr "Не удалось создать лицензию: неверный тип продукта."
+
+#: includes/Lic_Manager.php:65
+msgid "License could not be created: Invalid sites allowed number."
+msgstr ""
+"Не удалось создать лицензию: недопустимое разрешенное количество сайтов."
+
+#: includes/Lic_Manager.php:165
+msgid "No item and key assigned"
+msgstr "Элемент и ключ не назначены"
+
+#. Name of the plugin
+msgid "WC Plugin Update Server integration"
+msgstr "Интеграция с сервером обновлений подключаемого модуля WC"
+
+#: wc-plugin-update-server.php:94
+msgid "WC Software License Manager"
+msgstr "Диспетчер лицензий программного обеспечения WC"
+
+#: wc-plugin-update-server.php:70
+#| msgid ""
+#| "Woocommerce or WPPUS_License_Server is not activated. To work thi plugin, "
+#| "you need to install and activate WooCommerce and WPPUS_License_Server "
+#| "plugins."
+msgid ""
+"Woocommerce or WPPUS_License_Server is not activated. To work this plugin, "
+"you need to install and activate WooCommerce and WPPUS_License_Server "
+"plugins."
+msgstr ""
+"Woocommerce или WPPUS_License_Server не активированы. Для работы этого "
+"плагина необходимо установить и активировать плагины WooCommerce и "
+"WPPUS_License_Server."
+
+#: includes/Lic_Manager.php:157 includes/Lic_Manager.php:190
+msgid "Your Licenses"
+msgstr "Ваши лицензии"
