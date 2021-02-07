@@ -3,6 +3,7 @@
 
 final class Lic_Manager
 {
+    public const key = '_wc_slm_payment_licenses';
 
     public function __construct(){
         $this->add_actions();
@@ -117,9 +118,10 @@ final class Lic_Manager
                 // Collect license keys
                 if (isset($result->license_key)) {
                     $licenses[] = array(
-                        'item' => $item_name,
-                        'key' => $result->license_key,
-                        'expires' => $renewal_period,
+                        'item'      => $item_name,
+                        'key'       => $result->license_key,
+                        'expires'   => $renewal_period,
+                        'lic_id'    => $result->id
                     );
                 }
             }
@@ -127,7 +129,7 @@ final class Lic_Manager
 
 
         if (count($licenses) != 0) {
-            update_post_meta($order_id, '_wc_slm_payment_licenses', $licenses);
+            update_post_meta($order_id, self::key, $licenses);
         }
 
         if (count($licenses) != 0) {
@@ -138,11 +140,11 @@ final class Lic_Manager
         } else {
             $message = __('License Key(s) could not be created.', 'wc-slm');
         }
-        $this->add_order_note($order_id, $message);
+        self::add_order_note($order_id, $message);
 
     }
 
-    protected function add_order_note( int $order_id, string $note){
+    public static function add_order_note( int $order_id, string $note){
         $order = new WC_Order($order_id);
         $order->add_order_note($note);
     }
@@ -152,7 +154,7 @@ final class Lic_Manager
      * @param WC_Order $order
      */
     public function print_order_meta(WC_Order $order){
-        $licenses = get_post_meta($order->get_id(), '_wc_slm_payment_licenses', true);
+        $licenses = get_post_meta($order->get_id(), Lic_Manager::key, true);
         if ($licenses && count($licenses) != 0) {
             $output = '<h2>' . __('Your Licenses', 'wc-pus') . ':</h2>';
             $output .= '<table class="shop_table shop_table_responsive"><tr><th class="td">' . __('Item', 'wc-pus') . '</th><th class="td">' . __('License', 'wc-pus') . '</th></tr>';
@@ -184,7 +186,7 @@ final class Lic_Manager
             $output = '';
 
             // Check if licenses were generated
-            $licenses = get_post_meta($order->get_id(), '_wc_slm_payment_licenses', true);
+            $licenses = get_post_meta($order->get_id(), Lic_Manager::key, true);
 
             if ($licenses && count($licenses) != 0) {
                 $output = '<h3>' . __('Your Licenses', 'wc-pus') . ':</h3><table><tr><th class="td">' . __('Item', 'wc-pus') . '</th><th class="td">' . __('License', 'wc-pus') . '</th><th class="td">' . __('Expire Date', 'wc-pus') . '</th></tr>';
@@ -215,5 +217,12 @@ final class Lic_Manager
             }
             echo $output;
         }
+    }
+
+    public static function get_types(){
+        return [
+            'plugin' => __('Plugin', 'wc-pus'),
+            'theme'  => __('Theme', 'wc-pus'),
+        ];
     }
 }

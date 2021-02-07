@@ -1,8 +1,8 @@
 <?php
 /**
  * Class Software_Licence_Manager_integration
+ *
  */
-
 class Software_Licence_Manager_integration
 {
     /** @var string - meta key */
@@ -17,14 +17,13 @@ class Software_Licence_Manager_integration
      */
     public function slm_migration(){
 
-        if ( true != get_option( 'wppus_use_licenses' ) || true == get_option('slm_migration') ) {
+        if ( true != get_option( 'wppus_use_licenses' ) || true == get_option(self::$key) ) {
             return null;
         }
 
         global $wpdb;
 
-        $new_table = $wpdb->prefix.'wppus_licenses';
-
+        $new_table = $wpdb->prefix . 'wppus_licenses';
         if(!defined(SLM_TBL_LICENSE_KEYS)) {
             $old_table = $wpdb->prefix . 'lic_key_tbl';
         } else {
@@ -32,7 +31,7 @@ class Software_Licence_Manager_integration
         }
 
         if(!defined(SLM_TBL_LIC_DOMAIN)){
-            $old_domain_table = $wpdb->prefix.'lic_reg_domain_tbl';
+            $old_domain_table = $wpdb->prefix . 'lic_reg_domain_tbl';
         } else {
             $old_domain_table = SLM_TBL_LIC_DOMAIN;
         }
@@ -45,6 +44,7 @@ class Software_Licence_Manager_integration
             foreach ($pre_domains as $domain){
                 $item->allowed_domains[] = $domain->registered_domain;
             }
+
             /**
              * @var object - <li>
              * @property int id
@@ -64,7 +64,6 @@ class Software_Licence_Manager_integration
              * @property string subscr_id
              * </li>
              */
-
             $item->product_ref = 'woo-to-iiko';
             $item->package_type = 'plugin';
 
@@ -98,6 +97,6 @@ class Software_Licence_Manager_integration
 
         error_log('SLM Migration complete. All items: ' . count( $result));
 
-        update_option('slm_migration', true);
+        update_option(self::$key, true);
     }
 }

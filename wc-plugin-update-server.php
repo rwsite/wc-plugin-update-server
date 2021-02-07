@@ -76,13 +76,17 @@ class Lic_Manager_Plugin {
         require_once __DIR__ .  '/includes/Lic_Settings.php';
         require_once __DIR__ . '/includes/Lic_Manager.php';
         require_once __DIR__ . '/includes/Software_Licence_Manager_integration.php';
+        require_once __DIR__ . '/includes/Lic_Admin.php';
 
         if (is_admin()) {
             new Software_Licence_Manager_integration();
         }
 
+        new Lic_Admin();
+
         new Lic_Settings();
         new Lic_Manager();
+
     }
 
     /**
@@ -104,5 +108,6 @@ class Lic_Manager_Plugin {
 
 register_activation_hook(__FILE__, ['Lic_Manager_Plugin', 'activation']);
 register_uninstall_hook(__FILE__,  ['Lic_Manager_Plugin', 'uninstall']);
+
 add_action('plugins_loaded', ['Lic_Manager_Plugin','getInstance']);
 endif;
