@@ -3,7 +3,7 @@
  * Plugin Name:     WC Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:
- * Version:         1.0.0
+ * Version:         1.0.1
  * Author:          Aleksey Tikhomirov
  * Author URI:      http://rwsite.ru
  * Text Domain:     wc-pus
