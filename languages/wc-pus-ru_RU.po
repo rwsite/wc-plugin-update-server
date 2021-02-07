@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-06 12:22+0000\n"
-"PO-Revision-Date: 2021-02-06 12:27+0000\n"
+"PO-Revision-Date: 2021-02-07 12:34+0000\n"
 "Last-Translator: \n"
-"Language-Team: Russian\n"
+"Language-Team: Русский\n"
 "Language: ru_RU\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
 "n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2);\n"
@@ -56,11 +56,11 @@ msgstr "Элемент и ключ не назначены"
 
 #. Name of the plugin
 msgid "WC Plugin Update Server integration"
-msgstr "Интеграция с сервером обновлений подключаемого модуля WC"
+msgstr "WC Plugin Update Server интеграция"
 
 #: wc-plugin-update-server.php:94
 msgid "WC Software License Manager"
-msgstr "Диспетчер лицензий программного обеспечения WC"
+msgstr "WC Software License Manager"
 
 #: wc-plugin-update-server.php:70
 #| msgid ""
