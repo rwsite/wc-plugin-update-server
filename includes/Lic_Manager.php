@@ -35,9 +35,9 @@ final class Lic_Manager
             wp_die();
         }
         $payment_meta['user_info']['first_name']    = $get_user_meta['billing_first_name'][0];
-        $payment_meta['user_info']['last_name']     = $get_user_meta['billing_last_name'][0];
+        $payment_meta['user_info']['last_name']     = $get_user_meta['billing_last_name'][0] ?? '';
         $payment_meta['user_info']['email']         = $get_user_meta['billing_email'][0];
-        $payment_meta['user_info']['company']       = $get_user_meta['billing_company'][0];
+        $payment_meta['user_info']['company']       = $get_user_meta['billing_company'][0] ?? '';
 
         // Collect license keys
         $items = $_order->get_items();
