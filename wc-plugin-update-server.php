@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     WC Plugin Update Server integration
+ * Plugin Name:     WooCommerce Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:
  * Version:         1.0.1
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-if (!class_exists('Lic_Manager')):
+if (!class_exists('Lic_Manager_Plugin')):
 class Lic_Manager_Plugin {
 
     private static $instance;
