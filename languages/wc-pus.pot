@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-06 12:27+0000\n"
+"POT-Creation-Date: 2021-09-07 17:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,11 +16,15 @@ msgstr ""
 "X-Loco-Version: 2.5.0; wp-5.6.1\n"
 "X-Domain: wc-pus"
 
+#: includes/Lic_Admin.php:30
+msgid "Add licence to order products"
+msgstr ""
+
 #. Author of the plugin
 msgid "Aleksey Tikhomirov"
 msgstr ""
 
-#: includes/Lic_Manager.php:190
+#: includes/Lic_Manager.php:198
 msgid "Expire Date"
 msgstr ""
 
@@ -29,36 +33,68 @@ msgstr ""
 msgid "http://rwsite.ru"
 msgstr ""
 
-#: includes/Lic_Manager.php:158 includes/Lic_Manager.php:190
+#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
 msgid "Item"
 msgstr ""
 
-#: includes/Lic_Manager.php:158 includes/Lic_Manager.php:190
+#: includes/Lic_Admin.php:80
+msgid "Key"
+msgstr ""
+
+#: includes/Lic_Admin.php:226
+msgid "Licence: "
+msgstr ""
+
+#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
 msgid "License"
 msgstr ""
 
-#: includes/Lic_Manager.php:72
+#: includes/Lic_Manager.php:76
 msgid "License could not be created: Invalid product slug."
 msgstr ""
 
-#: includes/Lic_Manager.php:78
+#: includes/Lic_Manager.php:82
 msgid "License could not be created: Invalid product type."
 msgstr ""
 
-#: includes/Lic_Manager.php:65
+#: includes/Lic_Manager.php:69
 msgid "License could not be created: Invalid sites allowed number."
 msgstr ""
 
-#: includes/Lic_Manager.php:165
+#: includes/Lic_Admin.php:92
+msgid "License renewal period"
+msgstr ""
+
+#: includes/Lic_Admin.php:249
+msgid "License: "
+msgstr ""
+
+#: includes/Lic_Admin.php:86
+msgid "Maximum domains"
+msgstr ""
+
+#: includes/Lic_Manager.php:172
 msgid "No item and key assigned"
 msgstr ""
 
-#. Name of the plugin
-msgid "WC Plugin Update Server integration"
+#: includes/Lic_Manager.php:230
+msgid "Plugin"
 msgstr ""
 
-#: wc-plugin-update-server.php:94
-msgid "WC Software License Manager"
+#: includes/Lic_Admin.php:59
+msgid "Product name"
+msgstr ""
+
+#: includes/Lic_Admin.php:67
+msgid "Product type"
+msgstr ""
+
+#: includes/Lic_Admin.php:74
+msgid "Slug"
+msgstr ""
+
+#: includes/Lic_Manager.php:231
+msgid "Theme"
 msgstr ""
 
 #: wc-plugin-update-server.php:70
@@ -68,6 +104,10 @@ msgid ""
 "plugins."
 msgstr ""
 
-#: includes/Lic_Manager.php:157 includes/Lic_Manager.php:190
+#. Name of the plugin
+msgid "WooCommerce Plugin Update Server integration"
+msgstr ""
+
+#: includes/Lic_Manager.php:164 includes/Lic_Manager.php:198
 msgid "Your Licenses"
 msgstr ""

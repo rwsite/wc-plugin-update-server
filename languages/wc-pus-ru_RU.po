@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-06 12:22+0000\n"
-"PO-Revision-Date: 2021-02-07 12:34+0000\n"
+"PO-Revision-Date: 2021-09-07 17:10+0000\n"
 "Last-Translator: \n"
 "Language-Team: Русский\n"
 "Language: ru_RU\n"
@@ -16,11 +16,15 @@ msgstr ""
 "X-Loco-Version: 2.5.0; wp-5.6.1\n"
 "X-Domain: wc-pus"
 
+#: includes/Lic_Admin.php:30
+msgid "Add licence to order products"
+msgstr "Добавить лицензию товару в заказе"
+
 #. Author of the plugin
 msgid "Aleksey Tikhomirov"
 msgstr "Алексей Тихомиров"
 
-#: includes/Lic_Manager.php:190
+#: includes/Lic_Manager.php:198
 msgid "Expire Date"
 msgstr "Дата истечения"
 
@@ -29,38 +33,70 @@ msgstr "Дата истечения"
 msgid "http://rwsite.ru"
 msgstr "http://rwsite.ru"
 
-#: includes/Lic_Manager.php:158 includes/Lic_Manager.php:190
+#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
 msgid "Item"
 msgstr "Позиция"
 
-#: includes/Lic_Manager.php:158 includes/Lic_Manager.php:190
+#: includes/Lic_Admin.php:80
+msgid "Key"
+msgstr "Ключ"
+
+#: includes/Lic_Admin.php:226
+msgid "Licence: "
+msgstr "Лицензия:"
+
+#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
 msgid "License"
 msgstr "Лицензия"
 
-#: includes/Lic_Manager.php:72
+#: includes/Lic_Manager.php:76
 msgid "License could not be created: Invalid product slug."
 msgstr "Не удалось создать лицензию: недопустимый slug."
 
-#: includes/Lic_Manager.php:78
+#: includes/Lic_Manager.php:82
 msgid "License could not be created: Invalid product type."
 msgstr "Не удалось создать лицензию: неверный тип продукта."
 
-#: includes/Lic_Manager.php:65
+#: includes/Lic_Manager.php:69
 msgid "License could not be created: Invalid sites allowed number."
 msgstr ""
 "Не удалось создать лицензию: недопустимое разрешенное количество сайтов."
 
-#: includes/Lic_Manager.php:165
+#: includes/Lic_Admin.php:92
+msgid "License renewal period"
+msgstr "Срок продления лицензии"
+
+#: includes/Lic_Admin.php:249
+msgid "License: "
+msgstr "Лицензия:"
+
+#: includes/Lic_Admin.php:86
+msgid "Maximum domains"
+msgstr "Максимальное количество доменов"
+
+#: includes/Lic_Manager.php:172
 msgid "No item and key assigned"
 msgstr "Элемент и ключ не назначены"
 
-#. Name of the plugin
-msgid "WC Plugin Update Server integration"
-msgstr "WC Plugin Update Server интеграция"
+#: includes/Lic_Manager.php:230
+msgid "Plugin"
+msgstr "Плагин"
 
-#: wc-plugin-update-server.php:94
-msgid "WC Software License Manager"
-msgstr "WC Software License Manager"
+#: includes/Lic_Admin.php:59
+msgid "Product name"
+msgstr "Наименование товара"
+
+#: includes/Lic_Admin.php:67
+msgid "Product type"
+msgstr "Тип продукта"
+
+#: includes/Lic_Admin.php:74
+msgid "Slug"
+msgstr "Слаг"
+
+#: includes/Lic_Manager.php:231
+msgid "Theme"
+msgstr "Тема"
 
 #: wc-plugin-update-server.php:70
 #| msgid ""
@@ -76,6 +112,11 @@ msgstr ""
 "плагина необходимо установить и активировать плагины WooCommerce и "
 "WPPUS_License_Server."
 
-#: includes/Lic_Manager.php:157 includes/Lic_Manager.php:190
+#. Name of the plugin
+#| msgid "WC Plugin Update Server integration"
+msgid "WooCommerce Plugin Update Server integration"
+msgstr "WC Plugin Update Server интеграция"
+
+#: includes/Lic_Manager.php:164 includes/Lic_Manager.php:198
 msgid "Your Licenses"
 msgstr "Ваши лицензии"

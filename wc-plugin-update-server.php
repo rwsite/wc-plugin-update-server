@@ -93,8 +93,7 @@ class Lic_Manager_Plugin {
      */
     public function load_textdomain() {
         // Load the default language files
-        load_plugin_textdomain('wc-pus', false, 'wc-lic-server-integration/languages');
-        __('WC Software License Manager', 'wc-pus');
+        load_plugin_textdomain('wc-pus', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     }
 
     public static function activation() {
