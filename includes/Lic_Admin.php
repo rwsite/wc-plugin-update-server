@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Admin interface and actions
+ */
 
 final class Lic_Admin
 {

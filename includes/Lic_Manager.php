@@ -11,48 +11,51 @@ final class Lic_Manager
 
     public function add_actions(){
         // 1 - call
-        add_action('woocommerce_order_status_completed',                [$this, 'create_license_keys'], 10, 1);
-        // 2 - 2 call
+        add_action('woocommerce_order_status_completed',                [$this, 'create_license_keys'], 20, 1);
+        // 2 - call
         add_action('woocommerce_email_before_order_table',              [$this, 'email_content'], 10, 2);
         // 3 - call
-        add_action('woocommerce_order_details_before_order_table',       [$this, 'print_order_meta'], 10, 1);
+        add_action('woocommerce_order_details_before_order_table',      [$this, 'print_order_meta'], 10, 1);
     }
 
     /**
-     * Add licence to order data
+     * Generate licences and save to order data
      *
      * @param int $order_id Order ID.
+     * @return void
      */
     public function create_license_keys( int $order_id)
     {
         $payment_meta = $licenses = [];
-        $_order = wc_get_order($order_id);
-        $user_id = $_order->get_user_id();
+        $order = wc_get_order($order_id);
+        if ( ! $order ) { return; }
 
+        $user_id = $order->get_user_id();
         $get_user_meta = get_user_meta($user_id);
+
         if(!is_array($get_user_meta)){
-            error_log('get_user_meta() failed!');
-            wp_die();
+            error_log('get_user_meta() failed!'); return;
         }
+
         $payment_meta['user_info']['first_name']    = $get_user_meta['billing_first_name'][0];
         $payment_meta['user_info']['last_name']     = $get_user_meta['billing_last_name'][0] ?? '';
         $payment_meta['user_info']['email']         = $get_user_meta['billing_email'][0];
         $payment_meta['user_info']['company']       = $get_user_meta['billing_company'][0] ?? '';
 
-        // Collect license keys
-        $items = $_order->get_items();
+        // Generate license keys for all products in order
+        $items = $order->get_items();
         foreach ($items as $item => $values) {
 
             $product_id = $values['product_id'];
             $product = new WC_Product($product_id);
 
-            if (!Lic_Settings::get_licensing_enabled($product_id) || !$product->is_downloadable()) {
-                // console_log('Лицензии выключены или товар не имеет разрешения на загрзуку');
-                return;
+            if ( !Lic_Settings::get_licensing_enabled($product_id) || !$product->is_downloadable() ) {
+                continue; // Лицензии выключены или товар не имеет разрешения на загрузку
             }
 
             $download_quantity = absint($values['qty']);
             for ($i = 1; $i <= $download_quantity; $i++) {
+
                 $renewal_period = Lic_Settings::get_renewal_period($product_id);
                 if ($renewal_period == 0) {
                     $renewal_period = '0000-00-00';
@@ -86,7 +89,7 @@ final class Lic_Manager
                 $owner_name .= " " . (isset($payment_meta['user_info']['last_name'])) ? $payment_meta['user_info']['last_name'] : '';
 
                 // Build parameters
-                $api_params = array();
+                $api_params = [];
                 $api_params['linknonce'] = wp_create_nonce('linknonce');
                 $api_params['wppus_license_action'] = 'create';
                 $api_params['page'] = 'wppus-page-licenses';
@@ -117,22 +120,22 @@ final class Lic_Manager
 
                 // Collect license keys
                 if (isset($result->license_key)) {
-                    $licenses[] = array(
+                    $licenses[] = [
                         'item'      => $item_name,
                         'key'       => $result->license_key,
                         'expires'   => $renewal_period,
                         'lic_id'    => $result->id
-                    );
+                    ];
                 }
             }
         }
 
 
-        if (count($licenses) != 0) {
-            update_post_meta($order_id, self::key, $licenses);
+        if (count($licenses) !== 0) {
+            update_post_meta($order_id, Lic_Manager::key, $licenses);
         }
 
-        if (count($licenses) != 0) {
+        if (count($licenses) !== 0) {
             $message = __('License Key(s) generated', 'wc-slm');
             foreach ($licenses as $license) {
                 $message .= '<br />' . $license['item'] . ': ' . $license['key'];
@@ -140,17 +143,19 @@ final class Lic_Manager
         } else {
             $message = __('License Key(s) could not be created.', 'wc-slm');
         }
-        self::add_order_note($order_id, $message);
 
+        self::add_order_note($order_id, $message);
     }
 
+    /** Add note to order */
     public static function add_order_note( int $order_id, string $note){
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $order->add_order_note($note);
     }
 
     /**
      * Add license details to user account details
+     *
      * @param WC_Order $order
      */
     public function print_order_meta(WC_Order $order){
@@ -177,6 +182,7 @@ final class Lic_Manager
     }
 
     /**
+     * Email
      * @param WC_Order $order
      * @param bool $is_admin_email
      */

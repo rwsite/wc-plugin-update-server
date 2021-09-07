@@ -3,7 +3,7 @@
  * Plugin Name:     WooCommerce Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:
- * Version:         1.0.1
+ * Version:         1.0.2
  * Author:          Aleksey Tikhomirov
  * Author URI:      http://rwsite.ru
  * Text Domain:     wc-pus
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @author          Aleksey <support@rwsite.ru>
- * @copyright       Copyright (c) Aleksey
+ * @copyright       Copyright (c) Aleksey Tikhomirov
  * @license         http://www.gnu.org/licenses/gpl-3.0.html
  *
  */
@@ -54,7 +54,7 @@ class Lic_Manager_Plugin {
      * Setup plugin constants
      */
     private function setup_constants() {
-        define('LIC_VER', '1.0.0');
+        define('LIC_VER', '1.0.2');
         define('LIC_DIR', plugin_dir_path(__FILE__));
         define('LIC_URL', plugin_dir_url(__FILE__));
     }
@@ -86,7 +86,6 @@ class Lic_Manager_Plugin {
 
         new Lic_Settings();
         new Lic_Manager();
-
     }
 
     /**
@@ -109,5 +108,5 @@ class Lic_Manager_Plugin {
 register_activation_hook(__FILE__, ['Lic_Manager_Plugin', 'activation']);
 register_uninstall_hook(__FILE__,  ['Lic_Manager_Plugin', 'uninstall']);
 
-add_action('plugins_loaded', ['Lic_Manager_Plugin','getInstance']);
+add_action('plugins_loaded', ['Lic_Manager_Plugin','getInstance'], 20);
 endif;

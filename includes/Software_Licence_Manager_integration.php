@@ -17,7 +17,7 @@ class Software_Licence_Manager_integration
      */
     public function slm_migration(){
 
-        if ( true != get_option( 'wppus_use_licenses' ) || true == get_option(self::$key) ) {
+        if ( !get_option( 'wppus_use_licenses' ) || get_option(self::$key) ) {
             return null;
         }
 
