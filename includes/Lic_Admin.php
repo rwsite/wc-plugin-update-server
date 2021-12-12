@@ -93,7 +93,7 @@ final class Lic_Admin
             'type'  => 'number'
         ]);
 
-        submit_button( __( 'Add' ), 'primary large', 'save', false, null);
+        submit_button( __( 'Add' ), 'primary large', 'wc-pus_save', false, null);
 
        /* $licences = $order->get_meta(Lic_Manager::key, true);
         foreach ($licences as $licence) {
@@ -111,7 +111,7 @@ final class Lic_Admin
      *
      * @param int $post_id Post ID.
      */
-    public static function save( int $post_id, $post ) {
+    public static function save( int $post_id, WP_Post $post ) {
         $post_id = absint( $post_id );
 
         // $post_id and $post are required && Dont' save meta boxes for revisions or autosaves.
@@ -126,18 +126,19 @@ final class Lic_Admin
         if ( empty( $_POST['post_ID'] ) || absint( $_POST['post_ID'] ) !== $post_id ) {
             return;
         }
-        // Check user has permission to edit.
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        // Check user has permission to edit. Check right button click
+        if ( ! current_user_can( 'edit_post', $post_id ) || !isset($_POST['wc-pus_save']) ) {
             return;
         }
 
         /**
+         *
          * [lic_name] => 0
          * [lic_type] => plugin
          * [lic_slug] => woo-to-iiko
          * [lic_key] => 8bc3be6a-dfb7-489c-a229-5eeb1d4b8287
          * [lic_sites_allowed] => 1
-         * [lic_renewal_period] => 1
+         * [lic_renewal_period] => 1|''
          */
         $data = [];
         if( isset($_POST['lic_product_id'], $_POST['lic_type'], $_POST['lic_slug'], $_POST['lic_key'],
@@ -152,17 +153,16 @@ final class Lic_Admin
             $data['item'] = $name;
             $data['key']  = $_POST['lic_key'];
 
+            $data['expires'] = date('Y-m-d', strtotime('0000-00-00'));
             if ( 0 !== intval($_POST['lic_renewal_period']) ) {
                 $data['expires'] = date('Y-m-d', strtotime('+' . intval($_POST['lic_renewal_period']) . ' years'));
-            } else {
-                $data['expires'] = '0000-00-00';
             }
 
             $meta = (array)get_post_meta($post_id, Lic_Manager::key, true);
             $order_new_lic_data = $data;
 
-            $data['date_created']   = mysql2date('Y-m-d', current_time('mysql'), false);
-            $data['date_renewed']   = $data['date_expiry']  = $data['expires'];
+            $data['date_created']   = date('Y-m-d', strtotime(current_time('mysql')));
+            $data['date_renewed']   = $data['date_expiry'] ?? $data['expires'];
             $data['sites_allowed']  = $data['max_allowed_domains'] = intval($_POST['lic_sites_allowed']);
             $data['email']          = $_POST['_billing_email'] ?? '';
             $data['package_slug']   = $_POST['lic_slug'];
@@ -173,7 +173,7 @@ final class Lic_Admin
             $data['first_name']     = $_POST['_billing_first_name'];
             $data['last_name']      = $_POST['_billing_last_name'];
 
-            $result = self::save_licence($data);
+            $result = self::save_licence_to_WPPUS($data);
             if($result instanceof stdClass) {
                 $order_new_lic_data['lic_id'] = $result->id;
             }
@@ -198,13 +198,11 @@ final class Lic_Admin
      * @param array $payload
      * @return array|array[]|bool[]|mixed|object
      */
-    public static function save_licence(array $payload){
+    public static function save_licence_to_WPPUS(array $payload){
         $lic_manager = new WPPUS_License_Server();
         $result = $lic_manager->add_license($payload);
         if(is_array($result) && isset($result['errors'])) {
-            console_log($result);
-        } else{
-            console_log($result);
+            error_log(print_r($result, true));
         }
         return $result;
     }

@@ -3,7 +3,7 @@
  * Plugin Name:     WooCommerce Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:
- * Version:         1.0.2
+ * Version:         1.0.3
  * Author:          Aleksey Tikhomirov
  * Author URI:      http://rwsite.ru
  * Text Domain:     wc-pus
@@ -45,18 +45,31 @@ class Lic_Manager_Plugin {
 
     private function __construct()
     {
-        $this->setup_constants();
+        $this->file = __FILE__;
+        $this->get_plugin_data();
         $this->includes();
         $this->load_textdomain();
     }
 
     /**
-     * Setup plugin constants
+     * Setup plugin data
      */
-    private function setup_constants() {
-        define('LIC_VER', '1.0.2');
-        define('LIC_DIR', plugin_dir_path(__FILE__));
-        define('LIC_URL', plugin_dir_url(__FILE__));
+    public function get_plugin_data()
+    {
+        $this->plugin_data = get_file_data($this->file, [
+            'version'     => 'Version',
+            'author'      => 'Author',
+            'name'        => 'Plugin Name',
+            'locale'      => 'Text Domain',
+            'description' => 'Description',
+            'plugin_url'  => 'Plugin URI'
+        ]);
+        $this->version          = $this->plugin_data["version"];
+        $this->key              = $this->plugin_data["locale"];
+        $this->locale           = $this->plugin_data["locale"];
+        $this->name             = $this->plugin_data["name"];
+
+        return $this->plugin_data;
     }
 
     /**
@@ -79,13 +92,14 @@ class Lic_Manager_Plugin {
         require_once __DIR__ . '/includes/Lic_Admin.php';
 
         if (is_admin()) {
-            new Software_Licence_Manager_integration();
+            // new Software_Licence_Manager_integration();
         }
 
         new Lic_Admin();
 
         new Lic_Settings();
         new Lic_Manager();
+
     }
 
     /**

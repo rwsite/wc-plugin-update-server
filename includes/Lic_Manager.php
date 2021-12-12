@@ -162,7 +162,8 @@ final class Lic_Manager
         $licenses = get_post_meta($order->get_id(), Lic_Manager::key, true);
         if ($licenses && count($licenses) != 0) {
             $output = '<h2>' . __('Your Licenses', 'wc-pus') . ':</h2>';
-            $output .= '<table class="shop_table shop_table_responsive"><tr><th class="td">' . __('Item', 'wc-pus') . '</th><th class="td">' . __('License', 'wc-pus') . '</th></tr>';
+            $output .= '<table class="shop_table shop_table_responsive"><tr><th class="td">' . __('Item', 'wc-pus') . '</th>
+                        <th class="td">' . __('License', 'wc-pus') . '</th></tr>';
             foreach ($licenses as $license) {
                 $output .= '<tr>';
                 if (isset($license['item']) && isset($license['key'])) {

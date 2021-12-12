@@ -1,6 +1,7 @@
 <?php
 /**
- * Settings
+ * Settings.
+ *
  */
 
 // Exit if accessed directly
