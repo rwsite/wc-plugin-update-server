@@ -1,13 +1,18 @@
 <?php
 /**
- * Plugin Name:     WooCommerce Plugin Update Server integration
+ * Plugin Name:     WooCommerce and Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:
- * Version:         1.0.3
+ * Version:         1.0.4
  * Author:          Aleksey Tikhomirov
  * Author URI:      http://rwsite.ru
  * Text Domain:     wc-pus
  * Domain Path:     /languages
+ *
+ * Requires at least: 5.6
+ * Requires PHP: 7.0
+ * WC requires at least: 6.0
+ * WC tested up to: 6.6.0
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU
  * General Public License version 3, as published by the Free Software Foundation. You may NOT assume
@@ -33,7 +38,7 @@ class Lic_Manager_Plugin {
     private static $instance;
 
     /**
-     * @return Lic_Manager
+     * @return LicOrder
      */
     public static function getInstance()
     {
@@ -86,20 +91,18 @@ class Lic_Manager_Plugin {
             return;
         }
 
-        require_once __DIR__ .  '/includes/Lic_Settings.php';
-        require_once __DIR__ . '/includes/Lic_Manager.php';
+        require_once __DIR__ .  '/includes/LicProduct.php';
+        require_once __DIR__ . '/includes/LicOrder.php';
         require_once __DIR__ . '/includes/Software_Licence_Manager_integration.php';
-        require_once __DIR__ . '/includes/Lic_Admin.php';
+        require_once __DIR__ . '/includes/LicOrderMetaBox.php';
 
         if (is_admin()) {
             // new Software_Licence_Manager_integration();
         }
 
-        new Lic_Admin();
-
-        new Lic_Settings();
-        new Lic_Manager();
-
+        (new LicOrderMetaBox())->add_actions();
+        (new LicProduct())->add_actions();
+        (new LicOrder())->add_actions();
     }
 
     /**

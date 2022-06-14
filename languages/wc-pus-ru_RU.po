@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-06 12:22+0000\n"
-"PO-Revision-Date: 2021-09-07 17:10+0000\n"
+"PO-Revision-Date: 2022-06-14 20:54+0000\n"
 "Last-Translator: \n"
-"Language-Team: Русский\n"
+"Language-Team: Russian\n"
 "Language: ru_RU\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
 "n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2);\n"
@@ -16,89 +16,129 @@ msgstr ""
 "X-Loco-Version: 2.5.0; wp-5.6.1\n"
 "X-Domain: wc-pus"
 
-#: includes/Lic_Admin.php:30
-msgid "Add licence to order products"
-msgstr "Добавить лицензию товару в заказе"
+#: includes/LicOrderMetaBox.php:309
+msgid "Add new licence"
+msgstr "Добавить новую лицензию"
 
 #. Author of the plugin
 msgid "Aleksey Tikhomirov"
 msgstr "Алексей Тихомиров"
 
-#: includes/Lic_Manager.php:198
+#: includes/LicProduct.php:59
+msgid "Enable licensing for this download."
+msgstr "Включить лицензии"
+
+#: includes/LicOrderMetaBox.php:183
+msgid "Error! License Key(s) could not be created."
+msgstr "Ошибка! Не удалось создать лицензии."
+
+#: includes/LicOrder.php:208
 msgid "Expire Date"
 msgstr "Дата истечения"
+
+#: includes/LicProduct.php:71
+msgid ""
+"How many sites can be activated trough a single license key? Enter 0 for "
+"lifetime."
+msgstr ""
 
 #. URI of the plugin
 #. Author URI of the plugin
 msgid "http://rwsite.ru"
 msgstr "http://rwsite.ru"
 
-#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
+#: includes/LicOrder.php:174 includes/LicOrder.php:208
 msgid "Item"
 msgstr "Позиция"
 
-#: includes/Lic_Admin.php:80
-msgid "Key"
-msgstr "Ключ"
+#: includes/LicOrderMetaBox.php:218
+#| msgid "Licence: "
+msgid "Licences"
+msgstr "Лицензии:"
 
-#: includes/Lic_Admin.php:226
-msgid "Licence: "
-msgstr "Лицензия:"
-
-#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
+#: includes/LicOrder.php:175 includes/LicOrder.php:208
 msgid "License"
 msgstr "Лицензия"
 
-#: includes/Lic_Manager.php:76
+#: includes/LicOrder.php:80
 msgid "License could not be created: Invalid product slug."
 msgstr "Не удалось создать лицензию: недопустимый slug."
 
-#: includes/Lic_Manager.php:82
+#: includes/LicOrder.php:86
 msgid "License could not be created: Invalid product type."
 msgstr "Не удалось создать лицензию: неверный тип продукта."
 
-#: includes/Lic_Manager.php:69
+#: includes/LicOrder.php:73
 msgid "License could not be created: Invalid sites allowed number."
 msgstr ""
 "Не удалось создать лицензию: недопустимое разрешенное количество сайтов."
 
-#: includes/Lic_Admin.php:92
-msgid "License renewal period"
-msgstr "Срок продления лицензии"
+#: includes/LicOrder.php:148
+msgid "License Key(s) could not be created."
+msgstr "Ошибка! Не удалось создать лицензии."
 
-#: includes/Lic_Admin.php:249
-msgid "License: "
-msgstr "Лицензия:"
+#: includes/LicOrder.php:143 includes/LicOrderMetaBox.php:180
+msgid "License Key(s) generated"
+msgstr "Лицензионный ключ создан"
 
-#: includes/Lic_Admin.php:86
+#: includes/LicProduct.php:65
+msgid "license renewal period(yearly)."
+msgstr "Период продления лицензии (ежегодно)."
+
+#: includes/LicOrderMetaBox.php:304
+msgid "License renewal period. In years."
+msgstr "Срок продления лицензии. В годах."
+
+#: includes/LicOrderMetaBox.php:39
+msgid "Manage licences"
+msgstr "Управление лицензиями"
+
+#: includes/LicOrderMetaBox.php:297
 msgid "Maximum domains"
 msgstr "Максимальное количество доменов"
 
-#: includes/Lic_Manager.php:172
+#: includes/LicOrderMetaBox.php:291
+msgid "New Key"
+msgstr "Новый ключ"
+
+#: includes/LicOrder.php:182
 msgid "No item and key assigned"
 msgstr "Элемент и ключ не назначены"
 
-#: includes/Lic_Manager.php:230
+#: includes/LicOrder.php:243
 msgid "Plugin"
 msgstr "Плагин"
 
-#: includes/Lic_Admin.php:59
+#: includes/LicOrderMetaBox.php:270
 msgid "Product name"
 msgstr "Наименование товара"
 
-#: includes/Lic_Admin.php:67
+#: includes/LicOrderMetaBox.php:285
+msgid "Product slug"
+msgstr "Product slug"
+
+#: includes/LicProduct.php:83
+msgid "Product slug."
+msgstr "Product slug"
+
+#: includes/LicOrderMetaBox.php:278
 msgid "Product type"
 msgstr "Тип продукта"
 
-#: includes/Lic_Admin.php:74
-msgid "Slug"
-msgstr "Слаг"
+#: includes/LicProduct.php:76
+msgid "Product type (plugin or theme)."
+msgstr "Тип продукта (плагин или тема)."
 
-#: includes/Lic_Manager.php:231
+#: includes/LicOrder.php:244
 msgid "Theme"
 msgstr "Тема"
 
-#: wc-plugin-update-server.php:70
+#. Name of the plugin
+#| msgid "WooCommerce Plugin Update Server integration"
+msgid "WooCommerce and Plugin Update Server integration"
+msgstr "Интеграция WooCommerce и Сервера Обновлений Плагинов"
+
+#: wc-plugin-update-server.php:88
 #| msgid ""
 #| "Woocommerce or WPPUS_License_Server is not activated. To work thi plugin, "
 #| "you need to install and activate WooCommerce and WPPUS_License_Server "
@@ -112,11 +152,10 @@ msgstr ""
 "плагина необходимо установить и активировать плагины WooCommerce и "
 "WPPUS_License_Server."
 
-#. Name of the plugin
-#| msgid "WC Plugin Update Server integration"
-msgid "WooCommerce Plugin Update Server integration"
-msgstr "WC Plugin Update Server интеграция"
+#: includes/LicOrderMetaBox.php:230
+msgid "You can change this data in WP PUS"
+msgstr "Вы можете изменить эти данные в WP PUS"
 
-#: includes/Lic_Manager.php:164 includes/Lic_Manager.php:198
+#: includes/LicOrder.php:173 includes/LicOrder.php:208
 msgid "Your Licenses"
 msgstr "Ваши лицензии"

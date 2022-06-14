@@ -10,7 +10,7 @@ https://github.com/froger-me/wp-plugin-update-server
 ![Alt text](https://i.imgur.com/3lAIQq9.jpg)
 
 #### Orders
-![](https://i.imgur.com/zT7UbQN.jpg)
+![](https://i.imgur.com/W24IqZz.jpeg)
 
-#### Edit order
-![](https://i.imgur.com/BRbMxYv.jpg)
+#### Edit order. Manage licences.
+![](https://i.imgur.com/o4bKYlX.jpeg)

@@ -1,12 +1,13 @@
 <?php
+/**
+ * Manager
+ */
 
-
-final class Lic_Manager
+final class LicOrder
 {
     public const key = '_wc_slm_payment_licenses';
 
     public function __construct(){
-        $this->add_actions();
     }
 
     public function add_actions(){
@@ -28,7 +29,10 @@ final class Lic_Manager
     {
         $payment_meta = $licenses = [];
         $order = wc_get_order($order_id);
-        if ( ! $order ) { return; }
+
+        if (empty($order)) {
+            return;
+        }
 
         $user_id = $order->get_user_id();
         $get_user_meta = get_user_meta($user_id);
@@ -49,36 +53,36 @@ final class Lic_Manager
             $product_id = $values['product_id'];
             $product = new WC_Product($product_id);
 
-            if ( !Lic_Settings::get_licensing_enabled($product_id) || !$product->is_downloadable() ) {
+            if ( !LicProduct::get_licensing_enabled($product_id) || !$product->is_downloadable() ) {
                 continue; // Лицензии выключены или товар не имеет разрешения на загрузку
             }
 
             $download_quantity = absint($values['qty']);
             for ($i = 1; $i <= $download_quantity; $i++) {
 
-                $renewal_period = Lic_Settings::get_renewal_period($product_id);
-                if ($renewal_period == 0) {
-                    $renewal_period = '0000-00-00';
+                $renewal_period = LicProduct::get_renewal_period($product_id);
+                if (0 === $renewal_period) {
+                    $renewal_period = date('Y-m-d', strtotime('+99 years'));
                 } else {
                     $renewal_period = date('Y-m-d', strtotime('+' . $renewal_period . ' years'));
                 }
 
                 // Sites allowed
-                $sites_allowed = Lic_Settings::get_sites_allowed($product_id);
-                if (!$sites_allowed) {
+                $sites_allowed = LicProduct::get_sites_allowed($product_id);
+                if ($sites_allowed <= 0 ) {
                     $sites_allowed_error = __('License could not be created: Invalid sites allowed number.', 'wc-pus');
                     $this->add_order_note($order_id, $sites_allowed_error);
                     break;
                 }
 
-                $product_slug = Lic_Settings::get_slug($product_id);
-                if (!$product_slug) {
+                $product_slug = LicProduct::get_slug($product_id);
+                if (empty($product_slug)) {
                     $this->add_order_note($order_id, __('License could not be created: Invalid product slug.', 'wc-pus'));
                     break;
                 }
 
-                $product_type = Lic_Settings::get_type($product_id);
-                if (!$product_type) {
+                $product_type = LicProduct::get_type($product_id);
+                if (empty($product_type)) {
                     $this->add_order_note($order_id, __('License could not be created: Invalid product type.', 'wc-pus'));
                     break;
                 }
@@ -86,33 +90,33 @@ final class Lic_Manager
                 // Build item name
                 $item_name = $product->get_title();
                 $owner_name = (isset($payment_meta['user_info']['first_name'])) ? $payment_meta['user_info']['first_name'] : '';
-                $owner_name .= " " . (isset($payment_meta['user_info']['last_name'])) ? $payment_meta['user_info']['last_name'] : '';
+                $owner_name .= (isset($payment_meta['user_info']['last_name'])) ? ' ' . $payment_meta['user_info']['last_name'] : '';
 
                 // Build parameters
                 $api_params = [];
                 $api_params['linknonce'] = wp_create_nonce('linknonce');
                 $api_params['wppus_license_action'] = 'create';
                 $api_params['page'] = 'wppus-page-licenses';
-                $api_params['wppus_license_action'] = 'create';
+                $today = mysql2date('Y-m-d', current_time('mysql'), false);
 
                 $payload = [
                     // default data
-                    'license_key'   => bin2hex(openssl_random_pseudo_bytes(16)),
-                    'date_created'  => mysql2date('Y-m-d', current_time('mysql'), false),
-                    'status'        => 'pending',
+                    'license_key'         => bin2hex(openssl_random_pseudo_bytes(16)),
+                    'date_created'        => $today,
+                    'status'              => 'pending',
                     // setup
                     'max_allowed_domains' => $sites_allowed,
-                    'email'         => (isset($payment_meta['user_info']['email'])) ? $payment_meta['user_info']['email'] : '',
-                    'date_renewed'  => $renewal_period,
-                    'date_expiry'   => $renewal_period,
-                    'package_slug'  => $product_slug,
-                    'package_type'  => $product_type,
-                    'owner_name'    => $owner_name,
-                    'company_name'  => $payment_meta['user_info']['company'],
-                    'txn_id' => (string)$order_id,
+                    'email'               => $payment_meta['user_info']['email'] ?? '',
+                    'date_renewed'        => $today,
+                    'date_expiry'         => $renewal_period,
+                    'package_slug'        => $product_slug,
+                    'package_type'        => $product_type,
+                    'owner_name'          => $owner_name,
+                    'company_name'        => $payment_meta['user_info']['company'],
+                    'txn_id'              => (string)$order_id,
                     // custom
-                    'first_name' => (isset($payment_meta['user_info']['first_name'])) ? $payment_meta['user_info']['first_name'] : '',
-                    'last_name' => (isset($payment_meta['user_info']['last_name'])) ? $payment_meta['user_info']['last_name'] : '',
+                    'first_name'          => $payment_meta['user_info']['first_name'] ?? '',
+                    'last_name'           => $payment_meta['user_info']['last_name'] ?? '',
                 ];
 
                 $lic_manager = new WPPUS_License_Server();
@@ -132,22 +136,27 @@ final class Lic_Manager
 
 
         if (count($licenses) !== 0) {
-            update_post_meta($order_id, Lic_Manager::key, $licenses);
+            update_post_meta($order_id, LicOrder::key, $licenses);
         }
 
         if (count($licenses) !== 0) {
-            $message = __('License Key(s) generated', 'wc-slm');
+            $message = __('License Key(s) generated', 'wc-pus');
             foreach ($licenses as $license) {
                 $message .= '<br />' . $license['item'] . ': ' . $license['key'];
             }
         } else {
-            $message = __('License Key(s) could not be created.', 'wc-slm');
+            $message = __('License Key(s) could not be created.', 'wc-pus');
+            if(!empty($result['errors'][0])){
+                $message .= $result['errors'][0];
+            }
         }
 
         self::add_order_note($order_id, $message);
     }
 
-    /** Add note to order */
+    /**
+     * Add note to order
+     */
     public static function add_order_note( int $order_id, string $note){
         $order = wc_get_order($order_id);
         $order->add_order_note($note);
@@ -159,7 +168,7 @@ final class Lic_Manager
      * @param WC_Order $order
      */
     public function print_order_meta(WC_Order $order){
-        $licenses = get_post_meta($order->get_id(), Lic_Manager::key, true);
+        $licenses = get_post_meta($order->get_id(), LicOrder::key, true);
         if ($licenses && count($licenses) != 0) {
             $output = '<h2>' . __('Your Licenses', 'wc-pus') . ':</h2>';
             $output .= '<table class="shop_table shop_table_responsive"><tr><th class="td">' . __('Item', 'wc-pus') . '</th>
@@ -193,7 +202,7 @@ final class Lic_Manager
             $output = '';
 
             // Check if licenses were generated
-            $licenses = get_post_meta($order->get_id(), Lic_Manager::key, true);
+            $licenses = get_post_meta($order->get_id(), LicOrder::key, true);
 
             if ($licenses && count($licenses) != 0) {
                 $output = '<h3>' . __('Your Licenses', 'wc-pus') . ':</h3><table><tr><th class="td">' . __('Item', 'wc-pus') . '</th><th class="td">' . __('License', 'wc-pus') . '</th><th class="td">' . __('Expire Date', 'wc-pus') . '</th></tr>';
@@ -226,6 +235,9 @@ final class Lic_Manager
         }
     }
 
+    /**
+     * @return array
+     */
     public static function get_types(){
         return [
             'plugin' => __('Plugin', 'wc-pus'),

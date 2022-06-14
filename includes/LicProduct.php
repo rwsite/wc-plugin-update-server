@@ -1,7 +1,6 @@
 <?php
 /**
- * Settings.
- *
+ * Product Settings.
  */
 
 // Exit if accessed directly
@@ -9,7 +8,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Lic_Settings
+final class LicProduct
 {
     public static $section_id = 'products';
 
@@ -20,10 +19,14 @@ final class Lic_Settings
     public static $slug                 = '_wc_slm_slug';
 
     public function __construct(){
+
+    }
+
+    public function add_actions(){
         // Admin product settings
         if(is_admin()) {
             add_action('woocommerce_product_options_general_product_data', [$this, 'show_options']);
-            add_action('woocommerce_process_product_meta', [$this, 'save_options']);
+            add_action('woocommerce_process_product_meta', [$this, 'save_product_meta'], 10, 1);
         }
     }
 
@@ -34,16 +37,13 @@ final class Lic_Settings
         global $woocommerce, $post;
 
         $post_id = $post->ID;
-        $licensing_enabled = get_post_meta($post_id, self::$licensing_enabled, true) ? true : false;
+        $licensing_enabled = (bool)get_post_meta($post_id, self::$licensing_enabled, true);
         $sites_allowed = esc_attr(get_post_meta($post_id, self::$sites_allowed, true));
         $licensing_renewal_period = esc_attr(get_post_meta($post_id, self::$renewal_period, true));
         $product_type = esc_attr(get_post_meta($post_id, self::$type, true));
         $product_slug = esc_attr(get_post_meta($post_id, self::$slug, true));
 
         $display = $licensing_enabled ? '' : ' style="display:none;"';
-        if (trim($licensing_renewal_period) == '') {
-            $licensing_renewal_period = 0;
-        }
         ?>
         <script type="text/javascript">
             jQuery( document ).ready( function($) {
@@ -51,37 +51,36 @@ final class Lic_Settings
                     $( ".variable-toggled-hide" ).toggle();
                     $( ".toggled-hide" ).toggle();
                 });
-
-                if( $('#licensing_enabled').is(':checked')){
-                    // TODO: require: type and slug of product
-                }
             });
         </script>
 
         <p class="form-field">
             <input type="checkbox" name="licensing_enabled" id="licensing_enabled" value="1" <?php echo checked(true, $licensing_enabled, false); ?> />
-            <label for="licensing_enabled"><?php _e('Enable licensing for this download.', '');?></label>
+            <label for="licensing_enabled"><?php _e('Enable licensing for this download.', 'wc-pus');?></label>
         </p>
 
         <div <?php echo $display; ?> class="toggled-hide">
             <p class="form-field">
-                <label for="licensing_renewal_period"><?php _e('license renewal period(yearly) , enter 0 for lifetime.', '');?></label>
-                <input type="number" name="licensing_renewal_period" id="licensing_renewal_period" value="<?php echo $licensing_renewal_period; ?>"  />
+                <label for="licensing_renewal_period">
+                    <?php _e('license renewal period(yearly). Enter 0 for lifetime.', 'wc-pus');?>
+                </label>
+                <input type="number" name="licensing_renewal_period" id="licensing_renewal_period" value="<?php echo (int)$licensing_renewal_period; ?>"  />
             </p>
             <p class="form-field">
-                <label for="sites_allowed"><?php _e('How many sites can be activated trough a single license key?', '');?></label>
-                <input type="number" name="sites_allowed" class="small-text" value="<?php echo $sites_allowed; ?>" />
+                <label for="sites_allowed">
+                    <?php _e('How many sites can be activated trough a single license key?', 'wc-pus');?>
+                </label>
+                <input type="number" name="sites_allowed" class="small-text" value="<?php echo (int)$sites_allowed; ?>" />
             </p>
             <p class="form-field">
-                <label for="type"><?php _e('Product type (plugin or theme).', '');?></label>
-                <!--<select size="3" name="type[]">
-                    <option>plugin</option>
-                    <option>theme</option>
-                </select>-->
-                <input type="text" name="type" class="small-text" value="<?php echo $product_type; ?>" />
+                <label for="type"><?php _e('Product type (plugin or theme).', 'wc-pus');?></label>
+                <select name="type">
+                    <option <?php echo $product_type == 'plugin' ? 'selected': ''?> >plugin</option>
+                    <option <?php echo $product_type == 'theme'  ? 'selected': ''?> >theme</option>
+                </select>
             </p>
             <p class="form-field">
-                <label for="slug"><?php _e('Product slug.', '');?></label>
+                <label for="slug"><?php _e('Product slug.', 'wc-pus');?></label>
                 <input type="text" name="slug" class="small-text" value="<?php echo $product_slug; ?>" />
             </p>
         </div>
@@ -93,21 +92,22 @@ final class Lic_Settings
      *
      * @param int $post_id
      */
-    public function save_options( int $post_id) {
-        if (!empty($_POST['licensing_enabled'])) {
-            update_post_meta($post_id, self::$licensing_enabled, esc_html($_POST['licensing_enabled']));
-        }
-        if (!empty($_POST['sites_allowed'])) {
-            update_post_meta($post_id, self::$sites_allowed, esc_html($_POST['sites_allowed']));
-        }
-        if (!empty($_POST['licensing_renewal_period'])) {
-            update_post_meta($post_id, self::$renewal_period, esc_html($_POST['licensing_renewal_period']));
-        }
-        if (!empty($_POST['type'])) {
-            update_post_meta($post_id, self::$type, esc_html($_POST['type']));
-        }
-        if (!empty($_POST['slug'])) {
-            update_post_meta($post_id, self::$slug, esc_html($_POST['slug']));
+    public function save_product_meta(int $post_id) {
+
+        $properties = [
+            'licensing_enabled'        => self::$licensing_enabled,
+            'sites_allowed'            => self::$sites_allowed,
+            'licensing_renewal_period' => self::$renewal_period,
+            'type'                     => self::$type,
+            'slug'                     => self::$slug
+        ];
+
+
+        foreach ($properties as $key => $name) {
+            if (isset($_POST[$key])) {
+                $value = ($key === 'sites_allowed' && (int)$_POST[$key] <= 0) ? 1 : esc_html($_POST[$key]);
+                update_post_meta($post_id, $name, $value);
+            }
         }
     }
 

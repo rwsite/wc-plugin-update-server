@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-07 17:06+0000\n"
+"POT-Creation-Date: 2022-06-14 20:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,16 +16,30 @@ msgstr ""
 "X-Loco-Version: 2.5.0; wp-5.6.1\n"
 "X-Domain: wc-pus"
 
-#: includes/Lic_Admin.php:30
-msgid "Add licence to order products"
+#: includes/LicOrderMetaBox.php:309
+msgid "Add new licence"
 msgstr ""
 
 #. Author of the plugin
 msgid "Aleksey Tikhomirov"
 msgstr ""
 
-#: includes/Lic_Manager.php:198
+#: includes/LicProduct.php:59
+msgid "Enable licensing for this download."
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:183
+msgid "Error! License Key(s) could not be created."
+msgstr ""
+
+#: includes/LicOrder.php:208
 msgid "Expire Date"
+msgstr ""
+
+#: includes/LicProduct.php:71
+msgid ""
+"How many sites can be activated trough a single license key? Enter 0 for "
+"lifetime."
 msgstr ""
 
 #. URI of the plugin
@@ -33,81 +47,105 @@ msgstr ""
 msgid "http://rwsite.ru"
 msgstr ""
 
-#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
+#: includes/LicOrder.php:174 includes/LicOrder.php:208
 msgid "Item"
 msgstr ""
 
-#: includes/Lic_Admin.php:80
-msgid "Key"
+#: includes/LicOrderMetaBox.php:218
+msgid "Licences"
 msgstr ""
 
-#: includes/Lic_Admin.php:226
-msgid "Licence: "
-msgstr ""
-
-#: includes/Lic_Manager.php:165 includes/Lic_Manager.php:198
+#: includes/LicOrder.php:175 includes/LicOrder.php:208
 msgid "License"
 msgstr ""
 
-#: includes/Lic_Manager.php:76
+#: includes/LicOrder.php:80
 msgid "License could not be created: Invalid product slug."
 msgstr ""
 
-#: includes/Lic_Manager.php:82
+#: includes/LicOrder.php:86
 msgid "License could not be created: Invalid product type."
 msgstr ""
 
-#: includes/Lic_Manager.php:69
+#: includes/LicOrder.php:73
 msgid "License could not be created: Invalid sites allowed number."
 msgstr ""
 
-#: includes/Lic_Admin.php:92
-msgid "License renewal period"
+#: includes/LicOrder.php:148
+msgid "License Key(s) could not be created."
 msgstr ""
 
-#: includes/Lic_Admin.php:249
-msgid "License: "
+#: includes/LicOrder.php:143 includes/LicOrderMetaBox.php:180
+msgid "License Key(s) generated"
 msgstr ""
 
-#: includes/Lic_Admin.php:86
+#: includes/LicProduct.php:65
+msgid "license renewal period(yearly)."
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:304
+msgid "License renewal period. In years."
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:39
+msgid "Manage licences"
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:297
 msgid "Maximum domains"
 msgstr ""
 
-#: includes/Lic_Manager.php:172
+#: includes/LicOrderMetaBox.php:291
+msgid "New Key"
+msgstr ""
+
+#: includes/LicOrder.php:182
 msgid "No item and key assigned"
 msgstr ""
 
-#: includes/Lic_Manager.php:230
+#: includes/LicOrder.php:243
 msgid "Plugin"
 msgstr ""
 
-#: includes/Lic_Admin.php:59
+#: includes/LicOrderMetaBox.php:270
 msgid "Product name"
 msgstr ""
 
-#: includes/Lic_Admin.php:67
+#: includes/LicOrderMetaBox.php:285
+msgid "Product slug"
+msgstr ""
+
+#: includes/LicProduct.php:83
+msgid "Product slug."
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:278
 msgid "Product type"
 msgstr ""
 
-#: includes/Lic_Admin.php:74
-msgid "Slug"
+#: includes/LicProduct.php:76
+msgid "Product type (plugin or theme)."
 msgstr ""
 
-#: includes/Lic_Manager.php:231
+#: includes/LicOrder.php:244
 msgid "Theme"
 msgstr ""
 
-#: wc-plugin-update-server.php:70
+#. Name of the plugin
+msgid "WooCommerce and Plugin Update Server integration"
+msgstr ""
+
+#: wc-plugin-update-server.php:88
 msgid ""
 "Woocommerce or WPPUS_License_Server is not activated. To work this plugin, "
 "you need to install and activate WooCommerce and WPPUS_License_Server "
 "plugins."
 msgstr ""
 
-#. Name of the plugin
-msgid "WooCommerce Plugin Update Server integration"
+#: includes/LicOrderMetaBox.php:230
+msgid "You can change this data in WP PUS"
 msgstr ""
 
-#: includes/Lic_Manager.php:164 includes/Lic_Manager.php:198
+#: includes/LicOrder.php:173 includes/LicOrder.php:208
 msgid "Your Licenses"
 msgstr ""
