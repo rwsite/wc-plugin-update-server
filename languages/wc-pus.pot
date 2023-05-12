@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-14 20:50+0000\n"
+"POT-Creation-Date: 2023-05-12 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,30 +16,48 @@ msgstr ""
 "X-Loco-Version: 2.5.0; wp-5.6.1\n"
 "X-Domain: wc-pus"
 
-#: includes/LicOrderMetaBox.php:309
+#: includes/LicOrderMetaBox.php:387
+msgid "Add new licence"
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:333
 msgid "Add new licence"
 msgstr ""
 
 #. Author of the plugin
-msgid "Aleksey Tikhomirov"
+msgid "Aleksei Tikhomirov"
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:339
+msgid "Choose product"
+msgstr ""
+
+#: includes/LicOrder.php:181
+msgid "Domain"
+msgstr ""
+
+#: includes/LicOrder.php:182
+msgid "Download"
 msgstr ""
 
 #: includes/LicProduct.php:59
 msgid "Enable licensing for this download."
 msgstr ""
 
-#: includes/LicOrderMetaBox.php:183
-msgid "Error! License Key(s) could not be created."
+#: includes/LicOrderMetaBox.php:146
+msgid "Error! The license key creating has been failed."
 msgstr ""
 
-#: includes/LicOrder.php:208
-msgid "Expire Date"
+#: includes/LicOrder.php:179
+msgid "Expires"
+msgstr ""
+
+#: includes/LicOrder.php:251
+msgid "Expiry"
 msgstr ""
 
 #: includes/LicProduct.php:71
-msgid ""
-"How many sites can be activated trough a single license key? Enter 0 for "
-"lifetime."
+msgid "How many sites can be activated trough a single license key?"
 msgstr ""
 
 #. URI of the plugin
@@ -47,87 +65,71 @@ msgstr ""
 msgid "http://rwsite.ru"
 msgstr ""
 
-#: includes/LicOrder.php:174 includes/LicOrder.php:208
+#: includes/LicOrder.php:249
 msgid "Item"
 msgstr ""
 
-#: includes/LicOrderMetaBox.php:218
+#: includes/LicOrder.php:180
+msgid "Key"
+msgstr ""
+
+#: includes/LicOrder.php:222
+msgid "Licence has expired"
+msgstr ""
+
+#: includes/LicOrderMetaBox.php:264 includes/LicOrderMetaBox.php:403
 msgid "Licences"
 msgstr ""
 
-#: includes/LicOrder.php:175 includes/LicOrder.php:208
+#: includes/LicOrder.php:250
 msgid "License"
 msgstr ""
 
-#: includes/LicOrder.php:80
+#: includes/LicOrder.php:84
 msgid "License could not be created: Invalid product slug."
 msgstr ""
 
-#: includes/LicOrder.php:86
+#: includes/LicOrder.php:90
 msgid "License could not be created: Invalid product type."
 msgstr ""
 
-#: includes/LicOrder.php:73
+#: includes/LicOrder.php:77
 msgid "License could not be created: Invalid sites allowed number."
 msgstr ""
 
-#: includes/LicOrder.php:148
+#: includes/LicOrder.php:152
 msgid "License Key(s) could not be created."
 msgstr ""
 
-#: includes/LicOrder.php:143 includes/LicOrderMetaBox.php:180
+#: includes/LicOrder.php:147
 msgid "License Key(s) generated"
 msgstr ""
 
 #: includes/LicProduct.php:65
-msgid "license renewal period(yearly)."
-msgstr ""
-
-#: includes/LicOrderMetaBox.php:304
-msgid "License renewal period. In years."
+msgid "license renewal period(yearly). Enter 0 for lifetime."
 msgstr ""
 
 #: includes/LicOrderMetaBox.php:39
 msgid "Manage licences"
 msgstr ""
 
-#: includes/LicOrderMetaBox.php:297
-msgid "Maximum domains"
-msgstr ""
-
-#: includes/LicOrderMetaBox.php:291
-msgid "New Key"
-msgstr ""
-
-#: includes/LicOrder.php:182
-msgid "No item and key assigned"
-msgstr ""
-
-#: includes/LicOrder.php:243
+#: includes/LicOrder.php:281
 msgid "Plugin"
-msgstr ""
-
-#: includes/LicOrderMetaBox.php:270
-msgid "Product name"
-msgstr ""
-
-#: includes/LicOrderMetaBox.php:285
-msgid "Product slug"
 msgstr ""
 
 #: includes/LicProduct.php:83
 msgid "Product slug."
 msgstr ""
 
-#: includes/LicOrderMetaBox.php:278
-msgid "Product type"
-msgstr ""
-
 #: includes/LicProduct.php:76
 msgid "Product type (plugin or theme)."
 msgstr ""
 
-#: includes/LicOrder.php:244
+#: includes/LicOrderMetaBox.php:143
+msgid "The license Key has been generated success"
+msgstr ""
+
+#: includes/LicOrder.php:282
 msgid "Theme"
 msgstr ""
 
@@ -135,17 +137,17 @@ msgstr ""
 msgid "WooCommerce and Plugin Update Server integration"
 msgstr ""
 
-#: wc-plugin-update-server.php:88
+#: includes/LicPlugin.php:56
 msgid ""
-"Woocommerce or WPPUS_License_Server is not activated. To work this plugin, "
-"you need to install and activate WooCommerce and WPPUS_License_Server "
+"Woocommerce or WP Plugin Update Server is not activated. To work this plugin,"
+" you need to install and activate WooCommerce and WPPUS_License_Server "
 "plugins."
 msgstr ""
 
-#: includes/LicOrderMetaBox.php:230
+#: includes/LicOrderMetaBox.php:281
 msgid "You can change this data in WP PUS"
 msgstr ""
 
-#: includes/LicOrder.php:173 includes/LicOrder.php:208
+#: includes/LicOrder.php:177 includes/LicOrder.php:248
 msgid "Your Licenses"
 msgstr ""

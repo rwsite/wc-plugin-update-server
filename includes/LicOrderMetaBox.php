@@ -36,7 +36,7 @@ final class LicOrderMetaBox
         foreach (wc_get_order_types('order-meta-boxes') as $type) {
             $order_type_object = get_post_type_object($type);
             if ('shop_order' === $order_type_object->name) {
-                add_meta_box('licence', __('Manage licences', 'wc-pus'), [$this,'licence_meta_box'], $type, 'side', 'default');
+                add_meta_box('licence', __('Manage licences', 'wc-pus'), [$this, 'render_meta_box' ], $type, 'side', 'default');
             }
         }
     }
@@ -46,7 +46,7 @@ final class LicOrderMetaBox
      *
      * @param WP_Post $post
      */
-    public function licence_meta_box(WP_Post $post)
+    public function render_meta_box(WP_Post $post)
     {
         global $theorder;
 
@@ -55,16 +55,21 @@ final class LicOrderMetaBox
         }
 
         $order = $theorder;
+        if(!$order){
+            return;
+        }
         ?>
 
         <div class="lic_data_column_container">
+
             <div class="lic_data_column">
-            <?php $this->add_order_meta($order); ?>
+                <?php $this->add_order_meta($order); ?>
             </div>
 
             <div class="lic_data_column">
-            <?php $this->add_lic_content($order); ?>
+                <?php $this->add_lic_content($order); ?>
             </div>
+
         </div>
 
         <style>
@@ -82,110 +87,151 @@ final class LicOrderMetaBox
                 font-size: 1.3em;
                 margin: 0 !important;
             }
+            .short {
+                width: 100%;
+            }
         </style>
         <?php
-
     }
 
 
     /**
-     * Save meta box data.
+     * Save meta box data. Save data form process
+     *
      * @see LicOrderMetaBox::add_lic_content()
      *
      * @param int $post_id Post ID.
      */
-    public static function save(int $post_id, WP_Post $post)
+    public static function save(int $post_id, WP_Post $post = null)
     {
         $post_id = absint($post_id);
 
-        // $post_id and $post are required && Dont' save meta boxes for revisions or autosaves.
-        if (empty($post_id) || empty($post) || defined('DOING_AUTOSAVE') || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {
+        if(false === self::save_validation($post_id, $post)){
             return;
         }
-        // Check the nonce.
-        if (empty($_POST['woocommerce_meta_nonce']) || !wp_verify_nonce(wp_unslash($_POST['woocommerce_meta_nonce']), 'woocommerce_save_data')) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-            return;
-        }
-        // Check the post being saved == the $post_id to prevent triggering this call for other save_post events.
-        if (empty($_POST['post_ID']) || absint($_POST['post_ID']) !== $post_id) {
-            return;
-        }
+	    $product_id     = absint($_POST['lic_product_id']);
 
-        // Check user has permission to edit. Check right button click
-        if (!current_user_can('edit_post', $post_id) || !isset($_POST['wc-pus_save'])) {
-            return;
-        }
-
-        /**
-         *
-         * [lic_name] => 0
-         * [lic_type] => plugin
-         * [lic_slug] => woo-to-iiko
-         * [lic_key] => 8bc3be6a-dfb7-489c-a229-5eeb1d4b8287
-         * [lic_sites_allowed] => 1
-         * [lic_renewal_period] => 1|''
+	    $data = self::save_data_complete($post_id, $product_id);
+        /*
+         * [id]
+         * [license_key]
+         * [max_allowed_domains]
+         * [allowed_domains]
+         * [status]
+         * [owner_name]
+         * [email]
+         * [company_name]
+         * [txn_id]
+         * [date_created]
+         * [date_renewed]
+         * [date_expiry]
+         * [package_slug]
+         * [package_type]
          */
-        $data = [];
-        if (isset($_POST['lic_product_id'], $_POST['lic_type'], $_POST['lic_slug'], $_POST['lic_key'],
-                $_POST['lic_sites_allowed'], $_POST['lic_renewal_period']) && !empty($_POST['lic_product_id'])) {
+        $result = self::save_licence_to_WPPUS($data);
 
-            $order = wc_get_order($post_id);
-            $name = '';
-            foreach ($order->get_items() as $item_id => $item) {
-                $product = $item->get_product();
-                $name = $product->get_name();
-            }
-
-            $data['item'] = $name;
-            $data['key'] = $_POST['lic_key'];
-
-            $renewal_period= intval($_POST['lic_renewal_period']);
-            if (0 >= $renewal_period) {
-                $renewal_period = date('Y-m-d', strtotime('+99 years'));
-            } else {
-                $renewal_period = date('Y-m-d', strtotime('+' . $renewal_period . ' years'));
-            }
-
-            if (0 !== intval($_POST['lic_renewal_period'])) {
-                $data['expires'] = date('Y-m-d', strtotime('+' . intval($_POST['lic_renewal_period']) . ' years'));
-            }
-
-            $meta = (array)get_post_meta($post_id, LicOrder::key, true);
-            $order_new_lic_data = $data;
-
-            $data['date_created'] = date('Y-m-d', strtotime(current_time('mysql')));
-            $data['date_renewed'] = $data['date_created'];
-            $data['date_expiry'] = $renewal_period;
-
-            $data['max_allowed_domains'] = intval($_POST['lic_sites_allowed']) > 0 ? intval($_POST['lic_sites_allowed']) : 1;
-            $data['email'] = $_POST['_billing_email'] ?? '';
-            $data['package_slug'] = $_POST['lic_slug'];
-            $data['package_type'] = $_POST['lic_type'];
-            $data['owner_name'] = $_POST['_billing_first_name'] . ' ' . $_POST['_billing_last_name'];
-            $data['company_name'] = $_POST['_billing_company'];
-            $data['txn_id'] = (string)$post_id;
-            $data['first_name'] = $_POST['_billing_first_name'];
-            $data['last_name'] = $_POST['_billing_last_name'];
-
-            $result = self::save_licence_to_WPPUS($data);
-            
-            if ($result instanceof stdClass) {
-                $order_new_lic_data['lic_id'] = $result->id;
-            }
-
-            $meta[] = $order_new_lic_data;
-            update_post_meta($post_id, LicOrder::key, $meta);
-
-            if (!empty($order_new_lic_data['lic_id'])) {
-                $message = __('License Key(s) generated', 'wc-pus');
-                $message .= '<br />' . $order_new_lic_data['item'] . ': ' . $order_new_lic_data['key'];
-            } else {
-                $message = __('Error! License Key(s) could not be created.', 'wc-pus');
-            }
-
-            LicOrder::add_order_note($post_id, $message);
+        if (!$result instanceof stdClass) {
+	        wp_die('WC Pus: saving error');
         }
+
+	    $meta = (array) get_post_meta($post_id, LicOrder::key, true);
+        $meta[] = $result->id;
+
+        update_post_meta($post_id, LicOrder::key, $meta);
+
+        if ($result) {
+            $message = __('The license Key has been generated success', 'wc-pus');
+            $message .= '<br />' . $result->package_type .' '. $result->package_slug . ': ' . $result->license_key;
+        } else {
+            $message = __('Error! The license key creating has been failed.', 'wc-pus');
+	        trigger_error(print_r([$data, $result], true));
+        }
+
+        LicOrder::add_order_note($post_id, $message);
+
     }
+
+	/**
+     *
+     *
+	 * @param int $post_id
+	 * @param int $product_id
+	 *
+	 * @return array
+	 */
+    private static function save_data_complete($post_id, $product_id){
+	    $order = wc_get_order($post_id);
+	    $wc_product = wc_get_product($product_id);
+
+	    if(empty($wc_product) || empty($order) || '1' !== $wc_product->get_meta('_wc_slm_licensing_enabled')){
+		    wp_die('WC Pus: saving error');
+	    }
+
+	    $data = [];
+	    $data['item'] = $wc_product->get_name();
+	    $data['key']  = bin2hex(openssl_random_pseudo_bytes(16));
+
+	    $renewal_period = $_POST['lic_renewal_period'] ?? (int)$wc_product->get_meta('_wc_slm_licensing_renewal_period');
+
+	    if (0 >= $renewal_period) {
+		    $data['date_expiry'] = date('Y-m-d', strtotime('+99 years'));
+	    } else {
+		    $data['date_expiry'] = date('Y-m-d', strtotime('+' . $renewal_period . ' years'));
+	    }
+
+	    if (0 !== intval($renewal_period)) {
+		    $data['expires'] = date('Y-m-d', strtotime('+' . $renewal_period . ' years'));
+	    }
+
+	    $data['date_created'] = date('Y-m-d', strtotime(current_time('mysql')));
+	    $data['date_renewed'] = $data['date_created'];
+	    $data['max_allowed_domains'] = $_POST['lic_sites_allowed'] ?? $wc_product->get_meta('_wc_slm_sites_allowed');
+	    $data['package_slug'] = $_POST['lic_slug'] ?? $wc_product->get_meta('_wc_slm_slug');
+	    $data['package_type'] = $_POST['lic_type'] ?? $wc_product->get_meta('_wc_slm_type');
+
+	    $data['email'] = $_POST['_billing_email'] ?? '';
+	    $data['owner_name'] = $_POST['_billing_first_name'] . ' ' . $_POST['_billing_last_name'];
+	    $data['company_name'] = $_POST['_billing_company'];
+	    $data['txn_id'] = (string)$post_id;
+	    $data['first_name'] = $_POST['_billing_first_name'];
+	    $data['last_name'] = $_POST['_billing_last_name'];
+
+        return $data;
+    }
+
+
+	/**
+	 * @return bool
+	 */
+    private static function save_validation($post_id, $post){
+
+	    // $post_id and $post are required && Dont' save meta boxes for revisions or autosaves.
+	    if (empty($post_id) || defined('DOING_AUTOSAVE') || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {
+		    return false;
+	    }
+
+	    // Check the nonce.
+	    if (empty($_POST['woocommerce_meta_nonce']) || !wp_verify_nonce(wp_unslash($_POST['woocommerce_meta_nonce']), 'woocommerce_save_data')) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		    return false;
+	    }
+
+	    // Check the post being saved == the $post_id to prevent triggering this call for other save_post events.
+	    if (empty($_POST['post_ID']) || absint($_POST['post_ID']) !== $post_id) {
+		    return false;
+	    }
+
+	    // Check user has permission to edit. Check right button click
+	    if (!current_user_can('edit_post', $post_id) || empty($_POST['lic_product_id']) ) {
+		    return false;
+	    }
+
+        if('wc-completed' !== $_POST['order_status'] && !isset($_POST['lic_save'])){
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Save new licence
@@ -215,13 +261,18 @@ final class LicOrderMetaBox
         $licenses = get_post_meta($order_id, LicOrder::key, true);
         $licenses_enable = !empty($licenses);
          if ($licenses_enable): ?>
-            <h4><?php _e('Licences', 'wc-pus')?>:</h4>
-            <!--<button id="lic-t-btn" href="#" class="button button-primary">Show licence list</button>-->
-            <div class="lic-list" style="<?php echo $licenses_enable ? '' : ' display:none;'; ?>">
+            <h3><?php _e('Licences', 'wc-pus')?></h3>
+
+            <?php if( count($licenses) > 3):?>
+                <button id="lic-t-btn" href="#" class="button button-secondary">Show license list</button>
+                 <p></p>
+            <?php endif; ?>
+
+            <div class="lic-list" style="<?php echo count($licenses) > 3 ? ' display:none;' : ''; ?>">
                 <?php if (!empty($licenses)) {
                     foreach ($licenses as $k => $lic) {
-                        if (!empty($lic['lic_id'])) {
-                            $licence = self::get_license_by_id($lic['lic_id']);
+                        $licence = self::get_license_by_id($lic['lic_id'] ?? $lic);
+	                    if (!empty($licence)) {
                             woocommerce_wp_text_input([
                                 'id'                => LicOrder::key . '[' . $k . ']',
                                 'label'             => sprintf('%s %s. </br> %s to %s. ', $licence->package_type, $licence->package_slug, $licence->date_created, $licence->date_expiry),
@@ -239,12 +290,12 @@ final class LicOrderMetaBox
         add_action('admin_footer', function () {
             ?>
             <script type="text/javascript">
-                jQuery(document).ready(function ($) {
+                (function ($) {
                     $("#lic-t-btn").on("click", function (e) {
                         e.preventDefault();
-                        $(".lic-list").toggle('slow');
+                        $(".lic-list").toggle('display');
                     });
-                });
+                })(jQuery);
             </script>
             <?php
         });
@@ -252,41 +303,68 @@ final class LicOrderMetaBox
 
     /**
      * @see LicOrderMetaBox::save()
-     * @param $order
+     * @param WC_Order| WC_Order_Refund $order
      *
      * @return void
      */
-    public function add_lic_content($order)
+    public function add_lic_content( $order)
     {
-        $items = [];
-        $line_items = $order->get_items(apply_filters('woocommerce_admin_order_item_types', 'line_item'));
+        $options_products = [];
+        $line_items = $order->get_items();
+
         foreach ($line_items as $item) {
-            $items[$item->get_id()] = $item->get_name();
+            if($item instanceof WC_Order_Item_Product) {
+	            $product = $item->get_product();
+                if('1' == $product->get_meta('_wc_slm_licensing_enabled')) {
+	                $options_products[ $product->get_id() ] = $item->get_name();
+                }
+            }
         }
 
-        if (!empty($items)) {
+	    /*$packages = LicHelper::get_package() ?: ['slug' => ''];
+        $options = [];
+        foreach ($packages as $package){
+	        $options[$package['slug']] = $package['name'];
+        }
+
+	    $package = array_shift($packages);*/
+        ?>
+
+        <h3><?php _e('Add new licence', 'wc-pus')?>:</h3>
+
+        <?php
+        if (!empty($options_products)) {
             woocommerce_wp_select([
                 'id'      => 'lic_product_id',
-                'label'   => __('Product name', 'wc-pus'),
-                'options' => $items,
+                'label'   => __('Choose product', 'wc-pus'),
+                'options' => $options_products,
                 'value'   => array_shift($line_items)->get_id(),
             ]);
         }
 
-        woocommerce_wp_select([
-            'id'      => 'lic_type',
-            'label'   => __('Product type', 'wc-pus'),
-            'options' => LicOrder::get_types(),
-            'value'   => 'plugin',
-        ]);
+        /*if(!empty($options)){
+	        woocommerce_wp_select([
+		        'id'      => 'lic_package',
+		        'label'   => __('Package', 'wc-pus'),
+		        'options' => $options,
+		        'value'   => $package['slug'],
+	        ]);
+        } else {
+	        woocommerce_wp_select([
+		        'id'      => 'lic_type',
+		        'label'   => __('Product type', 'wc-pus'),
+		        'options' => LicOrder::get_types(),
+		        'value'   => !empty($package['type']) ? strtolower($package['type']) : 'plugin',
+	        ]);
 
-        woocommerce_wp_text_input([
-            'id'    => 'lic_slug',
-            'label' => __('Product slug', 'wc-pus'),
-            'value' => apply_filters('lic_default_value', 'woo-to-iiko'),
-        ]);
+	        woocommerce_wp_text_input( [
+		        'id'    => 'lic_slug',
+		        'label' => __( 'Package slug', 'wc-pus' ),
+		        'value' => apply_filters( 'lic_default_value', $package['slug'] ),
+	        ] );
+        }*/
 
-        woocommerce_wp_text_input([
+        /*woocommerce_wp_text_input([
             'id'    => 'lic_key',
             'label' => __('New Key', 'wc-pus'),
             'value' => bin2hex(openssl_random_pseudo_bytes(16)),
@@ -296,17 +374,17 @@ final class LicOrderMetaBox
             'id'    => 'lic_sites_allowed',
             'label' => __('Maximum domains', 'wc-pus'),
             'type'  => 'number',
-            'default' => '1'
+            'value' => '1'
         ]);
 
         woocommerce_wp_text_input([
             'id'    => 'lic_renewal_period',
             'label' => __('License renewal period. In years.', 'wc-pus'),
             'type'  => 'number',
-            'default' => '1'
+            'value' => '1'
         ]);
-
-        submit_button( __('Add new licence','wc-pus'), 'primary large', 'wc-pus_save', false, null);
+*/
+        submit_button( __('Add new licence','wc-pus'), 'primary large', 'lic_save', false, null);
     }
 
 
@@ -322,13 +400,15 @@ final class LicOrderMetaBox
         $licenses = get_post_meta($order->get_id(), LicOrder::key, true);
 
         if (!empty($licenses)) {
-            $string = '<h3>Licences:</h3>';
+            $string = '<h3>'. __('Licences', 'wc-pus') .':</h3>';
             $string .= '<ul>';
             foreach ($licenses as $lic) {
-                if (!empty($lic['lic_id'])) {
-                    $licence = self::get_license_by_id($lic['lic_id']);
-                    $string .= sprintf('<li><b>%s %s:</b> <pre><code>%s</code></pre></li>',
-                        $licence->package_type, $licence->package_slug, $licence->license_key);
+                $licence = self::get_license_by_id($lic['lic_id'] ?? $lic);
+                if(!empty($licence)) {
+	                $string .= sprintf( '<li><b>%s %s:</b> <pre><code>%s</code></pre></li>',
+		                $licence->package_type,
+		                $licence->package_slug,
+		                $licence->license_key );
                 }
             }
             $string .= '</ul>';
@@ -360,7 +440,12 @@ final class LicOrderMetaBox
     {
         /** @var wpdb */
         global $wpdb;
-        $result = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE `id` = '%d'", $id));
+
+        if(!empty($id)) {
+	        $result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE `id` = '%d'",
+		        $id ) );
+        }
+
         return $result[0] ?? null;
     }
 }

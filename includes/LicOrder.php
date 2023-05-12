@@ -17,6 +17,10 @@ final class LicOrder
         add_action('woocommerce_email_before_order_table',              [$this, 'email_content'], 10, 2);
         // 3 - call
         add_action('woocommerce_order_details_before_order_table',      [$this, 'print_order_meta'], 10, 1);
+		// download package
+	    if ( isset( $_GET['package_slug'] ) && ( isset( $_GET['email'] ) || isset( $_GET['uid'] ) ) ) { // WPCS: input var ok, CSRF ok.
+		    add_action( 'init', array( __CLASS__, 'download_package' ) );
+	    }
     }
 
     /**
@@ -169,18 +173,54 @@ final class LicOrder
      */
     public function print_order_meta(WC_Order $order){
         $licenses = get_post_meta($order->get_id(), LicOrder::key, true);
-        if ($licenses && count($licenses) != 0) {
+        if (!empty($licenses) && count($licenses) != 0) {
             $output = '<h2>' . __('Your Licenses', 'wc-pus') . ':</h2>';
-            $output .= '<table class="shop_table shop_table_responsive"><tr><th class="td">' . __('Item', 'wc-pus') . '</th>
-                        <th class="td">' . __('License', 'wc-pus') . '</th></tr>';
+            $output .= '<table class="shop_table shop_table_responsive"><tr>';
+	        $output .= '<th class="td">' . __('Expires', 'wc-pus') . '</th>';
+	        $output .= '<th class="td">' . __('Key', 'wc-pus') . '</th>';
+	        $output .= '<th class="td">' . __('Domain', 'wc-pus') . '</th>';
+	        $output .= '<th class="td">' . __('Download', 'wc-pus') . '</th></tr>';
+
+			$lic_manager = new WPPUS_License_Server();
             foreach ($licenses as $license) {
-                $output .= '<tr>';
-                if (isset($license['item']) && isset($license['key'])) {
-                    $output .= '<td class="td">' . $license['item'] . '</td>';
-                    $output .= '<td class="td">' . $license['key'] . '</td>';
-                } else {
-                    $output .= __('No item and key assigned', 'wc-pus');
-                }
+				/*
+				[id] => 187
+	            [license_key] => 2f61e0aee14b77d84e35fe67008942a7
+	            [max_allowed_domains] => 1
+	            [allowed_domains] => []
+	            [status] => pending
+	            [owner_name] => Test
+	            [email] => tech@rwsite.ru
+	            [company_name] =>
+	            [txn_id] => 4948
+	            [date_created] => 2023-02-17
+	            [date_renewed] => 2023-02-17
+	            [date_expiry] => 2024-02-17
+	            [package_slug] => woo-to-iiko
+	            [package_type] => plugin
+				 */
+				$lic = (array)$lic_manager->read_license(['id' => $license['lic_id'] ?? $license]);
+				if(empty($lic)){
+					continue;
+				}
+
+	            $lic['download'] = $this->generate_download_link($lic);
+				$html = '';
+				foreach ($lic['allowed_domains'] as $domain){
+					$html .= '<a href="https://'.$domain.'" target="_blank">' .$domain . '</a><br>';
+				}
+
+	            $output .= '<tr>';
+	            $output .= '<td class="td">' . $lic['date_expiry'] . '</td>';
+                $output .= '<td class="td">' . $lic['license_key'] . '</td>';
+                $output .= '<td class="td">' . $html . '</td>';
+
+				if(strtotime($lic['date_expiry']) > time()) {
+					$output .= '<td class="td"><a href="' . $lic['download'] . '" target="_blank" class="button alt">'
+					           . $lic['package_slug'] . '</a></td>';
+				} else {
+					$output .= '<td class="td">' . __( 'Licence has expired', 'wc-pus' )  . '</td>';
+				}
                 $output .= '</tr>';
             }
             $output .= '</table>';
@@ -205,7 +245,11 @@ final class LicOrder
             $licenses = get_post_meta($order->get_id(), LicOrder::key, true);
 
             if ($licenses && count($licenses) != 0) {
-                $output = '<h3>' . __('Your Licenses', 'wc-pus') . ':</h3><table><tr><th class="td">' . __('Item', 'wc-pus') . '</th><th class="td">' . __('License', 'wc-pus') . '</th><th class="td">' . __('Expire Date', 'wc-pus') . '</th></tr>';
+                $output = '<h3>' . __('Your Licenses', 'wc-pus') . ':</h3><table><tr>
+				<th class="td">' . __('Item', 'wc-pus') . '</th>
+				<th class="td">' . __('License', 'wc-pus') . '</th>
+				<th class="td">' . __('Expiry', 'wc-pus') . '</th>
+				</tr>';
                 foreach ($licenses as $license) {
                     $output .= '<tr>';
                     if (isset($license['item']) && isset($license['key'])) {
@@ -214,16 +258,9 @@ final class LicOrder
                         }
                         $output .= '<td class="td">' . $license['item'] . '</td>';
                         $output .= '<td class="td">' . $license['key'] . '</td>';
+	                    $output .= '<td class="td">' . $license['expires'] . '</td>';
                     } else {
                         // $output .= 'No item and key assigned';
-                    }
-                    /**
-                     * added expire date in table
-                     * @since       1.0.7
-                     * @author      AvdP (Albert van der Ploeg)
-                     */
-                    if (isset($license['expires'])) {
-                        $output .= '<td class="td">' . $license['expires'] . '</td>';
                     }
                     $output .= '</tr>';
                 }
@@ -231,6 +268,7 @@ final class LicOrder
             } else {
                 // $output .= 'No License Generatred';
             }
+
             echo $output;
         }
     }
@@ -244,4 +282,78 @@ final class LicOrder
             'theme'  => __('Theme', 'wc-pus'),
         ];
     }
+
+	/**
+	 * Render link to download file
+	 *
+	 * @param array $lic
+	 * @return string
+	 */
+	private function generate_download_link(array $lic){
+		$args = [
+			'uid'          => get_current_user_id(),
+			'package_slug' => $lic['package_slug'],
+			'order_id'     => $lic['txn_id'],
+			'lic_id'       => $lic['id']
+		];
+		return get_site_url() . '?' . http_build_query( $args );
+	}
+
+	/**
+	 * Get file by link
+	 *
+	 * @return void
+	 */
+	public static function download_package(){
+
+		$user_id = absint($_GET['uid']);
+		$package_slug = $_GET['package_slug'];
+		$order_id = (absint($_GET['order_id']));
+		$lic_id = (absint($_GET['lic_id']));
+
+		if ( empty( $user_id ) ) { // WPCS: input var ok, CSRF ok.
+			self::download_error( __( 'Invalid download link.', 'woocommerce' ) );
+		}
+
+		if ( ! is_user_logged_in() ) {
+			self::download_error( __( 'You must be logged in to download files.', 'woocommerce' ) . ' <a href="' . esc_url( wp_login_url( wc_get_page_permalink( 'myaccount' ) ) ) . '" class="wc-forward">' . __( 'Login', 'woocommerce' ) . '</a>', __( 'Log in to Download Files', 'woocommerce' ), 403 );
+		} elseif ( get_current_user_id() !== $user_id ){
+			self::download_error( __( 'This is not your download link.', 'woocommerce' ), '', 403 );
+		}
+
+		$lic = (new WPPUS_License_Server())->read_license(['id' => $lic_id]);
+		if ( strtotime('midnight', time()) > strtotime($lic->date_expiry)) {
+			self::download_error( __( 'Sorry, this download has expired', 'woocommerce' ), '', 403 );
+		}
+
+		wppus_download_local_package($package_slug);
+	}
+
+
+	/**
+	 * Die with an error message if the download fails.
+	 *
+	 * @param string  $message Error message.
+	 * @param string  $title   Error title.
+	 * @param integer $status  Error status.
+	 */
+	private static function download_error( $message, $title = '', $status = 404 ) {
+		/*
+		 * Since we will now render a message instead of serving a download, we should unwind some of the previously set
+		 * headers.
+		 */
+		if ( headers_sent() ) {
+			wc_get_logger()->log( 'warning', __( 'Headers already sent when generating download error message.', 'woocommerce' ) );
+		} else {
+			header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
+			header_remove( 'Content-Description;' );
+			header_remove( 'Content-Disposition' );
+			header_remove( 'Content-Transfer-Encoding' );
+		}
+
+		if ( ! strstr( $message, '<a ' ) ) {
+			$message .= ' <a href="' . esc_url( wc_get_page_permalink( 'shop' ) ) . '" class="wc-forward">' . esc_html__( 'Go to shop', 'woocommerce' ) . '</a>';
+		}
+		wp_die( $message, $title, array( 'response' => $status ) ); // WPCS: XSS ok.
+	}
 }

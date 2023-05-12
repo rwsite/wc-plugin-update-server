@@ -102,7 +102,6 @@ final class LicProduct
             'slug'                     => self::$slug
         ];
 
-
         foreach ($properties as $key => $name) {
             if (isset($_POST[$key])) {
                 $value = ($key === 'sites_allowed' && (int)$_POST[$key] <= 0) ? 1 : esc_html($_POST[$key]);

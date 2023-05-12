@@ -1,7 +1,7 @@
 <?php
 /**
  * Class Software_Licence_Manager_integration
- *
+ * @unused
  */
 class Software_Licence_Manager_integration
 {
