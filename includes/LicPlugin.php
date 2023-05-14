@@ -57,6 +57,7 @@ final class LicPlugin {
 		( new LicOrderMetaBox() )->add_actions();
 		( new LicProduct() )->add_actions();
 		( new LicOrder() )->add_actions();
+		( new LicHelper() )->add_actions();
 	}
 
 	/**
