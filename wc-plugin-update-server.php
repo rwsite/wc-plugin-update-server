@@ -35,7 +35,7 @@ if(class_exists( 'LicPlugin' ) || defined('WCPUS')){
 define('WCPUS', __FILE__);
 
 spl_autoload_register(function ($className){
-    $path = realpath(__DIR__) . '\includes\\' . strtr($className, '\\', DIRECTORY_SEPARATOR) . '.php';
+    $path = realpath(__DIR__ . '/includes/' . strtr($className, '/', DIRECTORY_SEPARATOR) . '.php');
     if (is_readable($path)) {
         include_once $path;
     }
