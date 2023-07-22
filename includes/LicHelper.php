@@ -90,4 +90,16 @@ class LicHelper {
 	public static function get_package_by_path( $path ) {
 		return Wpup_Package::fromArchive( $path, null, new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) ) );
 	}
+
+    /**
+     * Get type
+     * @return array
+     */
+    public static function get_types($package_type=null){
+        $types = [
+            'plugin' => esc_html__('Plugin', 'wc-pus'),
+            'theme'  => esc_html__('Theme', 'wc-pus'),
+        ];
+        return !empty($package_type) ? $types[$package_type] : $package_type;
+    }
 }

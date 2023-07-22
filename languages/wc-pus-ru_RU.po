@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-06 12:22+0000\n"
-"PO-Revision-Date: 2023-05-12 21:10+0000\n"
+"PO-Revision-Date: 2023-07-22 00:12+0000\n"
 "Last-Translator: Алексей\n"
 "Language-Team: Русский\n"
 "Language: ru_RU\n"
@@ -16,30 +16,38 @@ msgstr ""
 "X-Loco-Version: 2.6.4; wp-6.2\n"
 "X-Domain: wc-pus"
 
-#: includes/LicOrderMetaBox.php:387
+#: includes/LicOrderMetaBox.php:331 includes/LicOrderMetaBox.php:385
 msgid "Add new licence"
 msgstr "Добавить новую лицензию"
-
-#: includes/LicOrderMetaBox.php:333
-msgid "Add new license"
-msgstr ""
 
 #. Author of the plugin
 #| msgid "Aleksey Tikhomirov"
 msgid "Aleksei Tikhomirov"
 msgstr "Алексей Тихомиров"
 
-#: includes/LicOrderMetaBox.php:339
+#: includes/LicOrder.php:73
+msgid "An error occurred while updating the license"
+msgstr "Произошла ошибка при обновлении лицензии"
+
+#: includes/LicProlong.php:167
+msgid "Base product as prolongation"
+msgstr "Базовый товар в качестве продления"
+
+#: includes/LicOrderMetaBox.php:337
 msgid "Choose product"
 msgstr "Выберите товар"
 
-#: includes/LicOrder.php:181
+#: includes/LicOrder.php:200
 msgid "Domain"
 msgstr "Домен"
 
-#: includes/LicOrder.php:182
+#: includes/LicOrder.php:201
 msgid "Download"
 msgstr "Скачать"
+
+#: includes/LicProlong.php:160
+msgid "Enable bootstrap styles capability?"
+msgstr "Включить совместимые bootstrap стили?"
 
 #: includes/LicProduct.php:59
 msgid "Enable licensing for this download."
@@ -49,11 +57,11 @@ msgstr "Включить лицензии"
 msgid "Error! The license key creating has been failed."
 msgstr "Ошибка! Не удалось создать лицензионный ключ."
 
-#: includes/LicOrder.php:179
+#: includes/LicOrder.php:198
 msgid "Expires"
 msgstr "Истекает"
 
-#: includes/LicOrder.php:251
+#: includes/LicOrder.php:275
 msgid "Expiry"
 msgstr "Срок действия"
 
@@ -67,45 +75,49 @@ msgstr ""
 msgid "http://rwsite.ru"
 msgstr "http://rwsite.ru"
 
-#: includes/LicOrder.php:249
+#: includes/LicOrder.php:273
 msgid "Item"
 msgstr "Позиция"
 
-#: includes/LicOrder.php:180
+#: includes/LicOrder.php:199
 msgid "Key"
 msgstr "Ключ"
 
-#: includes/LicOrder.php:222
+#: includes/LicOrder.php:247
 msgid "Licence has expired"
 msgstr "Срок действия лицензии истек"
 
-#: includes/LicOrderMetaBox.php:264 includes/LicOrderMetaBox.php:403
+#: includes/LicOrderMetaBox.php:264 includes/LicOrderMetaBox.php:401
 #| msgid "Licence: "
 msgid "Licences"
 msgstr "Лицензии:"
 
-#: includes/LicOrder.php:250
+#: includes/LicOrder.php:274
 msgid "License"
 msgstr "Лицензия"
 
-#: includes/LicOrder.php:84
+#: includes/LicOrder.php:100
 msgid "License could not be created: Invalid product slug."
 msgstr "Не удалось создать лицензию: недопустимый slug."
 
-#: includes/LicOrder.php:90
+#: includes/LicOrder.php:106
 msgid "License could not be created: Invalid product type."
 msgstr "Не удалось создать лицензию: неверный тип продукта."
 
-#: includes/LicOrder.php:77
+#: includes/LicOrder.php:93
 msgid "License could not be created: Invalid sites allowed number."
 msgstr ""
 "Не удалось создать лицензию: недопустимое разрешенное количество сайтов."
+
+#: includes/LicOrder.php:71
+msgid "License key successfully renewed"
+msgstr "Лицензионный ключ успешно обновлен"
 
 #: includes/LicOrder.php:152
 msgid "License Key(s) could not be created."
 msgstr "Ошибка! Не удалось создать лицензии."
 
-#: includes/LicOrder.php:147
+#: includes/LicOrder.php:168
 msgid "License Key(s) generated"
 msgstr "Лицензионный ключ создан"
 
@@ -113,11 +125,15 @@ msgstr "Лицензионный ключ создан"
 msgid "license renewal period(yearly). Enter 0 for lifetime."
 msgstr "период продления лицензии (ежегодно). Введите 0 для lifetime."
 
+#: includes/LicOrderMetaBox.php:326
+msgid "Licenses cannot be added to this order."
+msgstr "Лицензии не могут быть добавлены к этому заказу."
+
 #: includes/LicOrderMetaBox.php:39
 msgid "Manage licences"
 msgstr "Управление лицензиями"
 
-#: includes/LicOrder.php:281
+#: includes/LicHelper.php:100
 msgid "Plugin"
 msgstr "Плагин"
 
@@ -129,20 +145,45 @@ msgstr "Product slug"
 msgid "Product type (plugin or theme)."
 msgstr "Тип продукта (плагин или тема)."
 
+#: includes/LicProlong.php:206
+#, php-format
+msgid "Renew license for %s"
+msgstr "Продление лицензию для %s"
+
+#: includes/LicProlong.php:166
+msgid "Renewal period in days"
+msgstr "Срок продления в днях"
+
+#: includes/LicProlong.php:165
+msgid "Renewal settings"
+msgstr "Настройки продления"
+
+#: includes/LicProlong.php:180
+msgid "Save"
+msgstr "Схранить"
+
 #: includes/LicOrderMetaBox.php:143
 msgid "The license Key has been generated success"
 msgstr "Лицензионный ключ сгенерирован успешно"
 
-#: includes/LicOrder.php:282
+#: includes/LicHelper.php:101
 msgid "Theme"
 msgstr "Тема"
+
+#: includes/LicProlong.php:154
+msgid "WooCommerce"
+msgstr "WooCommerce"
 
 #. Name of the plugin
 #| msgid "WooCommerce Plugin Update Server integration"
 msgid "WooCommerce and Plugin Update Server integration"
 msgstr "Интеграция WooCommerce и Сервера Обновлений Плагинов"
 
-#: includes/LicPlugin.php:56
+#: includes/LicProlong.php:157
+msgid "WooCommerce integration settings"
+msgstr "Настройки интеграции c WooCommerce"
+
+#: includes/LicPlugin.php:45
 #| msgid ""
 #| "Woocommerce or WPPUS_License_Server is not activated. To work this plugin,"
 #| " you need to install and activate WooCommerce and WPPUS_License_Server "
@@ -160,6 +201,11 @@ msgstr ""
 msgid "You can change this data in WP PUS"
 msgstr "Вы можете изменить эти данные в WP PUS"
 
-#: includes/LicOrder.php:177 includes/LicOrder.php:248
+#: includes/LicProlong.php:201
+#, php-format
+msgid "Your can renew this license key until: %s"
+msgstr "Вы можете продлить этот ключ до: %s"
+
+#: includes/LicOrder.php:195 includes/LicOrder.php:272
 msgid "Your Licenses"
 msgstr "Ваши лицензии"

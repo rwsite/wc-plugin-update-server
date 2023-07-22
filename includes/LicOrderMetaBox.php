@@ -311,23 +311,21 @@ final class LicOrderMetaBox
     {
         $options_products = [];
         $line_items = $order->get_items();
-
+        $can_add = false;
         foreach ($line_items as $item) {
             if($item instanceof WC_Order_Item_Product) {
 	            $product = $item->get_product();
                 if('1' == $product->get_meta('_wc_slm_licensing_enabled')) {
 	                $options_products[ $product->get_id() ] = $item->get_name();
+                    $can_add = true;
                 }
             }
         }
 
-	    /*$packages = LicHelper::get_package() ?: ['slug' => ''];
-        $options = [];
-        foreach ($packages as $package){
-	        $options[$package['slug']] = $package['name'];
+	    if(!$can_add){
+            _e('Licenses cannot be added to this order.', 'wc-pus');
+            return;
         }
-
-	    $package = array_shift($packages);*/
         ?>
 
         <h3><?php _e('Add new licence', 'wc-pus')?>:</h3>
@@ -442,8 +440,8 @@ final class LicOrderMetaBox
         global $wpdb;
 
         if(!empty($id)) {
-	        $result = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE `id` = '%d'",
-		        $id ) );
+	        $result = $wpdb->get_results(
+                    $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE `id` = '%d'",$id ) );
         }
 
         return $result[0] ?? null;

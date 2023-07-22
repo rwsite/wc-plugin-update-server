@@ -50,14 +50,15 @@ final class LicPlugin {
 			return;
 		}
 
-		if ( is_admin() ) {
+		//if ( is_admin() ) {
 			// new Software_Licence_Manager_integration();
-		}
+		//}
 
 		( new LicOrderMetaBox() )->add_actions();
 		( new LicProduct() )->add_actions();
 		( new LicOrder() )->add_actions();
 		( new LicHelper() )->add_actions();
+        LicProlong::I()->add_actions();
 	}
 
 	/**

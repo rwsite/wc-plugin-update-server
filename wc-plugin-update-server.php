@@ -3,18 +3,18 @@
  * Plugin Name:     WooCommerce and Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:
- * Version:         1.0.5
+ * Version:         1.0.6
  * Author:          Aleksei Tikhomirov
  * Author URI:      http://rwsite.ru
  * Text Domain:     wc-pus
  * Domain Path:     /languages
  *
- * Tested up to: 6.3.0
+ * Tested up to: 6.2.3
  * Requires at least: 5.6
  * Requires PHP: 7.4+
  *
  * WC requires at least: 6.0
- * WC tested up to: 7.7.0
+ * WC tested up to: 7.9.0
  *
  *
  * @author          <alex@rwsite.ru>
