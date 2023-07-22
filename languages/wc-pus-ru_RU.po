@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: WC Plugin Update Server integration\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-06 12:22+0000\n"
-"PO-Revision-Date: 2023-07-22 00:12+0000\n"
+"PO-Revision-Date: 2023-07-22 01:10+0000\n"
 "Last-Translator: Алексей\n"
 "Language-Team: Русский\n"
 "Language: ru_RU\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.6.4; wp-6.2\n"
+"X-Loco-Version: 2.6.4; wp-6.2.2\n"
 "X-Domain: wc-pus"
 
 #: includes/LicOrderMetaBox.php:331 includes/LicOrderMetaBox.php:385
@@ -147,8 +147,9 @@ msgstr "Тип продукта (плагин или тема)."
 
 #: includes/LicProlong.php:206
 #, php-format
-msgid "Renew license for %s"
-msgstr "Продление лицензию для %s"
+#| msgid "Renew license for %s"
+msgid "Renew license - %s"
+msgstr "Продлить лицензию - %s"
 
 #: includes/LicProlong.php:166
 msgid "Renewal period in days"

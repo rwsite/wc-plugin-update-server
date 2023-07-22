@@ -247,7 +247,10 @@ final class LicOrder
 					$output .= '<td class="td">' . __( 'Licence has expired', 'wc-pus' ) . '</td>';
 				}
                 $output .= '</tr>';
-                $output .= '<tr><td colspan="2">'. LicProlong::I()->render_renewal_checkout_link($lic) . '</td></tr>';
+
+                if(!empty(LicProlong::I()->base_product)) {
+                    $output .= '<tr><td colspan="2">' . LicProlong::I()->render_renewal_checkout_link($lic) . '</td></tr>';
+                }
             }
             $output .= '</table>';
         }

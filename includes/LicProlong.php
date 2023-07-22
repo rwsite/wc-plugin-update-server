@@ -203,7 +203,7 @@ class LicProlong
         $html .= '</td><td colspan="2" style="text-align: right">
         <a href="' . wc_get_checkout_url() . '?wcpus_lic=' . $lic['license_key'] . '"  
         class="' . $bs4['class'] . ' renew">' . $bs4['icon'] .
-            sprintf(esc_html__('Renew license for %s', 'wc-pus'),
+            sprintf(esc_html__('Renew license - %s', 'wc-pus'),
                 '<span style="margin-left: 5px">' . $product->get_price_html() . '</span>') . '</a>';
 
         return apply_filters('wc_pus_renew_link', $html);
