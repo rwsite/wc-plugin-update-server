@@ -1,17 +1,17 @@
 # wc-plugin-update-server
-Woocommerce and Plugin Update Server(PUS) integration.
+Woocommerce and wp-packages-update-server integration.
 Simple and powerfully!
 Licenses are created automatically after payment for the order. The plugin provides the ability to renew the license.
 
 **WP Plugin Update Server**
-https://github.com/froger-me/wp-plugin-update-server
+https://github.com/froger-me/wp-packages-update-server/
 
 **WooCommerce**
 https://github.com/woocommerce/woocommerce
 
 ## Screenshots
 
-Plugin create additional settings for WP PUS.
+Plugin create additional settings for WP PUS plugin.
 
 ![Settings](https://i.imgur.com/HcgLhFD.jpeg)
 

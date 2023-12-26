@@ -8,29 +8,23 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class LicProlong
+class LicProlongation
 {
-
-    private static $instance;
+	private static ?LicProlongation $instance = null;
 
     /** @var false|int */
     public $base_product;
 
-    /** @var string */
-    public $renewal_period;
-
-    /** @var bool */
-    public $bs4;
-
+    public ?string $renewal_period;
+    public bool $bss4;
 
     /**
-     * @return LicProlong
+     * @return LicProlongation
      */
-    public static function I() {
+    public static function I(): LicProlongation {
         if ( static::$instance === null ) {
-            static::$instance = new self();
+            static::$instance = new static();
         }
-
         return static::$instance;
     }
 
@@ -44,18 +38,18 @@ class LicProlong
      * Add actions
      *
      * @return void
-     * @throws Exception
      */
     public function add_actions(){
 
         add_action( 'admin_menu', function (){
-            $function    = array( $this, 'plugin_help_page' );
-            $page_title  = __( 'WP Plugin Update Server - WcooCommerce', 'wppus' );
+            $function    = [ $this, 'plugin_help_page' ];
+            $page_title  = __( 'WP Plugin Update Server - WooCommerce', 'wppus' );
             $menu_title  = __( 'WooCommerce', 'wppus' );
             $menu_slug   = 'wppus-page-wc';
             $capability  = 'manage_options';
             $parent_slug = 'wppus-page';
-            add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+
+	        add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
         }, 199, 0 );
 
         /* 1. Add lic key to product. Make order with product. */
@@ -85,6 +79,14 @@ class LicProlong
         ]);
     }
 
+	/**
+     * Display information as Meta on the Cart page
+     *
+	 * @param array $item_data
+	 * @param array $cart_item
+	 *
+	 * @return array
+	 */
     public function woocommerce_get_item_data(array $item_data, array $cart_item){
         if(isset($cart_item['wc_pus_license'])){
             $item_data[] = [
@@ -96,6 +98,16 @@ class LicProlong
         return $item_data;
     }
 
+	/**
+     * Save to order data. Showing on order received page.
+     *
+	 * @param WC_Order_Item_Product $item
+	 * @param $cart_item_key
+	 * @param $cart_items
+	 * @param $order
+	 *
+	 * @return WC_Order_Item_Product
+	 */
     public function woocommerce_checkout_create_order_line_item(WC_Order_Item_Product $item, $cart_item_key, $cart_items, $order){
         if(isset($cart_items['wc_pus_license'])){
             $item->add_meta_data($cart_items['wc_pus_label'], $cart_items['wc_pus_public_info']);
@@ -115,12 +127,12 @@ class LicProlong
         $products = ['' => ''] + get_posts(['post_type' => 'product']);
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
+            wp_die( __( 'Sorry, you are not allowed to access this page.' ) );
         }
 
         if(isset($_POST['wc_pus_product'])){
             $chosen = is_numeric($_POST['wc_pus_product']) ? absint($_POST['wc_pus_product']) : '';
-            update_option('wc_pus_product', $chosen);
+            update_option('wc_pus_product', $chosen); // main product
         }
 
         if(isset($_POST['wc_pus_renewal_period'])){
@@ -133,24 +145,27 @@ class LicProlong
             update_option('wc_pus_bs4', $this->bs4);
         }
 
-        ob_start();
+	    $page_title = __( 'WP Packages Update Server', 'wppus' );
+
+	    ob_start();
         ?>
         <div class="wrap wppus-wrap">
-            <h1><?php esc_html_e('WP Plugin Update Server', 'wppus'); ?></h1>
+
+            <h1><?php echo $page_title; ?></h1>
             <h2 class="nav-tab-wrapper">
-                <a href="admin.php?page=wppus-page" class="nav-tab">
-                    <span class='dashicons dashicons-welcome-view-site'></span> <?php esc_html_e('Overview', 'wppus'); ?>
+                <a href="<?= admin_url( 'admin.php?page=wppus-page', 'relative') ?>" class="nav-tab">
+                    <span class="dashicons dashicons-media-archive"></span> <?php echo __( 'Packages Overview', 'wppus' ); ?>
                 </a>
-                <a href="admin.php?page=wppus-page-remote-sources" class="nav-tab">
+                <a href="<?= admin_url( 'admin.php?page=wppus-page-remote-sources', 'relative') ?>" class="nav-tab">
                     <span class='dashicons dashicons-networking'></span> <?php esc_html_e('Remote Sources', 'wppus'); ?>
                 </a>
-                <a href="admin.php?page=wppus-page-licenses" class="nav-tab">
+                <a href="<?= admin_url( 'admin.php?page=wppus-page-licenses', 'relative') ?>" class="nav-tab">
                     <span class='dashicons dashicons-admin-network'></span> <?php esc_html_e('Licenses', 'wppus'); ?>
                 </a>
-                <a href="admin.php?page=wppus-page-help" class="nav-tab nav-tab">
+                <a href="<?= admin_url( 'admin.php?page=wppus-page-help', 'relative') ?>" class="nav-tab nav-tab">
                     <span class='dashicons dashicons-editor-help'></span> <?php esc_html_e('Help', 'wppus'); ?>
                 </a>
-                <a href="admin.php?page=wppus-page-wc" class="nav-tab nav-tab-active">
+                <a href="<?= admin_url( 'admin.php?page=wppus-page-wc', 'relative') ?>" class="nav-tab nav-tab-active">
                     <span class='dashicons dashicons-cart'></span> <?php esc_html_e('WooCommerce', 'wc-pus'); ?>
                 </a>
             </h2>
@@ -195,8 +210,8 @@ class LicProlong
     {
         $product = wc_get_product($this->base_product);
 
-        $bs4['class'] = LicProlong::I()->bs4 ? 'btn btn-outline-primary' : 'button';
-        $bs4['icon'] = LicProlong::I()->bs4 ? '<i class="las la-cart-arrow-down"></i>' : '';
+        $bs4['class'] = LicProlongation::I()->bs4 ? 'btn btn-outline-primary' : 'button';
+        $bs4['icon'] = LicProlongation::I()->bs4 ? '<i class="las la-cart-arrow-down"></i>' : '';
 
         $html = '<small>' . sprintf(esc_html__('Your can renew this license key until: %s', 'wc-pus'),
                 '<strong>' . $this->get_renewal_period((object)$lic) . '</strong>') . '</small>';
@@ -217,7 +232,7 @@ class LicProlong
      * @return string num days
      */
     public function get_renewal_period($old_lic){
-        $days = LicProlong::I()->renewal_period;
+        $days = LicProlongation::I()->renewal_period;
         if(strtotime('now') > strtotime($old_lic->date_expiry) ){ // license has already expired
             $period = date('Y-m-d', strtotime('+'.$days.' days'));
         } else {

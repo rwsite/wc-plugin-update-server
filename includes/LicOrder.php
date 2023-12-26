@@ -11,15 +11,17 @@ final class LicOrder
     }
 
     public function add_actions(){
-        // 1 - call
+
+        // 1 - create and save new keys
         add_action('woocommerce_order_status_completed',                [$this, 'create_license_keys'], 20, 1);
-        // 2 - call
+        // 2 - add data to email
         add_action('woocommerce_email_before_order_table',              [$this, 'email_content'], 10, 2);
         // 3 - call
         add_action('woocommerce_order_details_before_order_table',      [$this, 'print_order_meta'], 10, 1);
+
 		// download package
-	    if ( isset( $_GET['package_slug'] ) && ( isset( $_GET['email'] ) || isset( $_GET['uid'] ) ) ) { // WPCS: input var ok, CSRF ok.
-		    add_action( 'init', array( __CLASS__, 'download_package' ) );
+	    if ( isset( $_GET['package_slug'] ) && ( isset( $_GET['email'] ) || isset( $_GET['uid'] ) ) ) {
+		    add_action( 'init', [ LicOrder::class, 'download_package' ] );
 	    }
     }
 
@@ -62,12 +64,12 @@ final class LicOrder
             $product = new WC_Product($product_id);
 
             if ( false === LicProduct::get_licensing_enabled($product_id) && empty($lic_key) ) {
-                continue; // Лицензии выключены или товар не имеет разрешения на загрузку
+                continue;
             }
 
-            $old_lic = LicProlong::I()->get_old_lic_data($lic_key);
+            $old_lic = LicProlongation::I()->get_old_lic_data($lic_key);
             if(!empty($old_lic)){
-                if(LicProlong::I()->update_old_lic($old_lic)) {
+                if(LicProlongation::I()->update_old_lic($old_lic)) {
                     $message = esc_html__('License key successfully renewed', 'wc-pus');
                 } else {
                     $message = esc_html__('An error occurred while updating the license', 'wc-pus');
@@ -139,14 +141,15 @@ final class LicOrder
 
                 $lic_manager = new WPPUS_License_Server();
                 $result = $lic_manager->add_license($payload);
+				$license = $lic_manager->read_license($payload);
 
                 // Collect license keys
-                if (isset($result->license_key)) {
+                if (!empty($result) && !empty($license->license_key) && !empty($license->id) ) {
                     $licenses[] = [
                         'item'      => $product->get_title(),
-                        'key'       => $result->license_key,
+                        'key'       => $license->license_key,
                         'expires'   => $renewal_period,
-                        'lic_id'    => $result->id
+                        'lic_id'    => $license->id
                     ];
                 } else {
                     $message = __('License Key(s) could not be created.', 'wc-pus');
@@ -160,14 +163,13 @@ final class LicOrder
         }
 
 
-        if (count($licenses) !== 0) {
-            update_post_meta($order_id, LicOrder::key, $licenses);
-        }
+        if (count($licenses) > 0) {
 
-        if (count($licenses) !== 0) {
+            update_post_meta($order_id, LicOrder::key, $licenses);
+
             $message = __('License Key(s) generated', 'wc-pus');
             foreach ($licenses as $license) {
-                $message .= '<br />' . $license['item'] . ': ' . $license['key'];
+                $message .= '<br />' . $license['item'] . ': ' . $license['key'] . PHP_EOL;
             }
             self::add_order_note($order_id, $message);
         }
@@ -184,10 +186,14 @@ final class LicOrder
     /**
      * Add license details to user account details
      *
-     * @param WC_Order $order
+     * @param WC_Order|bool|WC_Order_Refund $order
      */
     public function print_order_meta($order, $show_title = true){
+
         $licenses = get_post_meta( is_int($order) ? $order : $order->get_id() , LicOrder::key, true);
+		console_log(['$licenses' => $licenses]);
+		var_dump($licenses);
+		wp_die(-1);
 
         if (!empty($licenses) && count($licenses) != 0) {
 	        $output = '';
@@ -233,13 +239,13 @@ final class LicOrder
 
 	            $output .= '<tr>';
 	            $output .= '<td class="td">' . $lic['date_expiry'] . '</td>';
-                $output .= '<td class="td">'. $lic['license_key'] .'</td>';
+                $output .= '<td class="td">' . $lic['license_key'] .'</td>';
 				$output .= '<td class="td">' . $html . '</td>';
 
 				if(strtotime($lic['date_expiry']) > time()) {
 
-                    $bs4['class'] = LicProlong::I()->bs4 ? 'btn btn-primary' : 'button';
-                    $bs4['icon']  = LicProlong::I()->bs4 ? '<i class="las la-cloud-download-alt"></i>' : '';
+                    $bs4['class'] = LicProlongation::I()->bs4 ? 'btn btn-primary' : 'button';
+                    $bs4['icon']  = LicProlongation::I()->bs4 ? '<i class="las la-cloud-download-alt"></i>' : '';
 
 					$output .= '<td class="td"><a href="' . $lic['download'] . '" 
 					target="_blank" class="'.$bs4['class'].' download">' . $bs4['icon'] . $lic['package_slug'] . '</a></td>';
@@ -247,10 +253,7 @@ final class LicOrder
 					$output .= '<td class="td">' . __( 'Licence has expired', 'wc-pus' ) . '</td>';
 				}
                 $output .= '</tr>';
-
-                if(!empty(LicProlong::I()->base_product)) {
-                    $output .= '<tr><td colspan="2">' . LicProlong::I()->render_renewal_checkout_link($lic) . '</td></tr>';
-                }
+                $output .= '<tr><td colspan="2">' . LicProlongation::I()->render_renewal_checkout_link($lic) . '</td></tr>';
             }
             $output .= '</table>';
         }

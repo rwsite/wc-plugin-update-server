@@ -1,8 +1,10 @@
 <?php
 /**
- * Class Software_Licence_Manager_integration
- * @unused
+ * Software Licence_Manager data import class.
+ *
+ * @deprecated Not used now.
  */
+
 class Software_Licence_Manager_integration
 {
     /** @var string - meta key */
@@ -39,9 +41,13 @@ class Software_Licence_Manager_integration
         $result = $wpdb->get_results("SELECT * FROM `$old_table`");
 
         foreach ($result as $item){
+
+			console_log(['$item->license_key' => $item->license_key]);
+
             $pre_domains = $wpdb->get_results($wpdb->prepare("SELECT * FROM `$old_domain_table` WHERE `lic_key` LIKE '%s'", $item->license_key));
             $item->allowed_domains = [];
-            foreach ($pre_domains as $domain){
+
+			foreach ($pre_domains as $domain){
                 $item->allowed_domains[] = $domain->registered_domain;
             }
 

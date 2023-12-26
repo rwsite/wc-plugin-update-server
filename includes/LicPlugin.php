@@ -50,15 +50,12 @@ final class LicPlugin {
 			return;
 		}
 
-		//if ( is_admin() ) {
-			// new Software_Licence_Manager_integration();
-		//}
-
-		( new LicOrderMetaBox() )->add_actions();
 		( new LicProduct() )->add_actions();
 		( new LicOrder() )->add_actions();
 		( new LicHelper() )->add_actions();
-        LicProlong::I()->add_actions();
+		( new LicOrderMetaBox() )->add_actions();
+
+		LicProlongation::I()->add_actions();
 	}
 
 	/**
@@ -72,7 +69,7 @@ final class LicPlugin {
 	/**
 	 * @return LicPlugin
 	 */
-	public static function getInstance() {
+	public static function getInstance(): LicPlugin {
 		if ( static::$instance === null ) {
 			static::$instance = new self();
 		}

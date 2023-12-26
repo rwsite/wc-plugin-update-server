@@ -1,6 +1,8 @@
 <?php
 /**
- * Get plugin info by slug.
+ * Get plugin info by slug for showing in any site part.
+ *
+ * How to use: [plugin_info slug="plugin_slug"]
  */
 
 
@@ -14,6 +16,7 @@ class LicHelper {
 	}
 
 	public function render_html($atts){
+
 		$atts = shortcode_atts( [
 			'slug' => '',
 			'data' => 'change_log'

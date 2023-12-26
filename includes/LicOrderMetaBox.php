@@ -1,11 +1,10 @@
 <?php
 /**
- * Admin interface and actions
+ * Render and handler WC Order meta-box for manage licenses.
  */
 
 final class LicOrderMetaBox
 {
-
     /**
      * Add actions
      *
@@ -67,7 +66,7 @@ final class LicOrderMetaBox
             </div>
 
             <div class="lic_data_column">
-                <?php $this->add_lic_content($order); ?>
+                <?php // $this->add_lic_content($order); ?>
             </div>
 
         </div>
@@ -264,7 +263,7 @@ final class LicOrderMetaBox
             <h3><?php _e('Licences', 'wc-pus')?></h3>
 
             <?php if( count($licenses) > 3):?>
-                <button id="lic-t-btn" href="#" class="button button-secondary">Show license list</button>
+                <button id="lic-t-btn" href="#" class="button button-secondary"><?= __('Show licenses list', 'wc-pus') ?></button>
                  <p></p>
             <?php endif; ?>
 
@@ -278,7 +277,7 @@ final class LicOrderMetaBox
                                 'label'             => sprintf('%s %s. </br> %s to %s. ', $licence->package_type, $licence->package_slug, $licence->date_created, $licence->date_expiry),
                                 'value'             => $licence->license_key,
                                 'custom_attributes' => ['readonly' => true],
-                                'description'       => __('You can change this data in WP PUS', 'wc-pus'),
+                                'description'       => __('You can change this data in WP Packages Update Server plugin', 'wc-pus'),
                                 'desc_tip'          => true,
                             ]);
                         }
@@ -340,35 +339,7 @@ final class LicOrderMetaBox
             ]);
         }
 
-        /*if(!empty($options)){
-	        woocommerce_wp_select([
-		        'id'      => 'lic_package',
-		        'label'   => __('Package', 'wc-pus'),
-		        'options' => $options,
-		        'value'   => $package['slug'],
-	        ]);
-        } else {
-	        woocommerce_wp_select([
-		        'id'      => 'lic_type',
-		        'label'   => __('Product type', 'wc-pus'),
-		        'options' => LicOrder::get_types(),
-		        'value'   => !empty($package['type']) ? strtolower($package['type']) : 'plugin',
-	        ]);
-
-	        woocommerce_wp_text_input( [
-		        'id'    => 'lic_slug',
-		        'label' => __( 'Package slug', 'wc-pus' ),
-		        'value' => apply_filters( 'lic_default_value', $package['slug'] ),
-	        ] );
-        }*/
-
-        /*woocommerce_wp_text_input([
-            'id'    => 'lic_key',
-            'label' => __('New Key', 'wc-pus'),
-            'value' => bin2hex(openssl_random_pseudo_bytes(16)),
-        ]);
-
-        woocommerce_wp_text_input([
+      /*  woocommerce_wp_text_input([
             'id'    => 'lic_sites_allowed',
             'label' => __('Maximum domains', 'wc-pus'),
             'type'  => 'number',
@@ -380,8 +351,8 @@ final class LicOrderMetaBox
             'label' => __('License renewal period. In years.', 'wc-pus'),
             'type'  => 'number',
             'value' => '1'
-        ]);
-*/
+        ]);*/
+
         submit_button( __('Add new licence','wc-pus'), 'primary large', 'lic_save', false, null);
     }
 
@@ -418,20 +389,6 @@ final class LicOrderMetaBox
     /**
      * Get licence by ID
      *
-     * [id] => 127
-     * [license_key] => df3b5f4d6b244b517260ed8dd1605ebf
-     * [max_allowed_domains] => 1
-     * [allowed_domains] => a:0:{}
-     * [status] => pending
-     * [owner_name] => testТихомиров
-     * [email] => tech@rwsite.ru
-     * [company_name] =>
-     * [txn_id] => 4783
-     * [date_created] => 2022-06-01
-     * [date_renewed] => 2022-06-01
-     * [date_expiry] => 2023-06-14
-     * [package_slug] => woo-to-iiko
-     * [package_type] => plugin
      * @return stdClass{id: int, license_key: string, max_allowed_domains: int, date_expiry: string, package_slug:string, package_type: string}
      */
     public static function get_license_by_id($id)
