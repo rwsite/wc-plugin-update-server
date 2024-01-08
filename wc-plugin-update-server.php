@@ -3,7 +3,7 @@
  * Plugin Name:     WC PUS integration
  * Plugin URI:      http://rwsite.ru
  * Description:     WooCommerce and WP Packages Update Server integration
- * Version:         1.0.7
+ * Version:         1.0.8
  * Author:          Aleksei Tikhomirov
  * Author URI:      http://rwsite.ru
  * Text Domain:     wc-pus

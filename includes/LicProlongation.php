@@ -272,7 +272,13 @@ class LicProlongation
         global $wpdb;
         $renewal_period = $this->get_renewal_period($old_lic_data);
         return $wpdb->update("{$wpdb->prefix}wppus_licenses",
-            ['date_expiry' => $renewal_period, 'date_renewed' => $this->get_date_renewed()],['id' => $old_lic_data->id] );
+            [
+             'date_expiry'  => $renewal_period,
+             'date_renewed' => $this->get_date_renewed(),
+             'status'       => 'activated'
+            ],
+            ['id' => $old_lic_data->id]
+        );
     }
 
 }
