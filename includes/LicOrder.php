@@ -191,9 +191,6 @@ final class LicOrder
     public function print_order_meta($order, $show_title = true){
 
         $licenses = get_post_meta( is_int($order) ? $order : $order->get_id() , LicOrder::key, true);
-		console_log(['$licenses' => $licenses]);
-		var_dump($licenses);
-		wp_die(-1);
 
         if (!empty($licenses) && count($licenses) != 0) {
 	        $output = '';
