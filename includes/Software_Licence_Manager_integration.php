@@ -42,12 +42,10 @@ class Software_Licence_Manager_integration
 
         foreach ($result as $item){
 
-			console_log(['$item->license_key' => $item->license_key]);
-
             $pre_domains = $wpdb->get_results($wpdb->prepare("SELECT * FROM `$old_domain_table` WHERE `lic_key` LIKE '%s'", $item->license_key));
             $item->allowed_domains = [];
 
-			foreach ($pre_domains as $domain){
+	    foreach ($pre_domains as $domain){
                 $item->allowed_domains[] = $domain->registered_domain;
             }
 
