@@ -3,8 +3,9 @@ Woocommerce and wp-packages-update-server integration.
 Simple and powerfully!
 Licenses are created automatically after payment for the order. The plugin provides the ability to renew the license.
 
-**WP Plugin Update Server**
-https://github.com/froger-me/wp-packages-update-server/
+**WP Plugin Update Server**  
+**Warning! The Plugin work only with version 1 !**  
+[https://github.com/froger-me/wp-packages-update-server/](https://github.com/froger-me/wp-packages-update-server/tree/v1)
 
 **WooCommerce**
 https://github.com/woocommerce/woocommerce
