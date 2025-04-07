@@ -6,6 +6,12 @@
 final class LicPlugin {
 
 	private static $instance;
+    public ?array $plugin_data;
+    public string $version;
+    public string $key;
+    public string $locale;
+    public string $name;
+    public string $file;
 
 	private function __construct() {
 		$this->file = WCPUS;

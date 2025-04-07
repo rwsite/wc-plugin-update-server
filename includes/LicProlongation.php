@@ -16,7 +16,7 @@ class LicProlongation
     public $base_product;
 
     public ?string $renewal_period;
-    public bool $bss4;
+    public bool $bs4;
 
     /**
      * @return LicProlongation

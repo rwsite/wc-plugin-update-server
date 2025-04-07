@@ -44,4 +44,4 @@ spl_autoload_register( function ( $className ) {
 register_activation_hook( __FILE__, [ 'LicPlugin', 'activation' ] );
 register_uninstall_hook( __FILE__, [ 'LicPlugin', 'uninstall' ] );
 
-add_action( 'plugins_loaded', [ 'LicPlugin', 'getInstance' ], 20 );
+add_action( 'init', [ 'LicPlugin', 'getInstance' ], 20 );
