@@ -56,31 +56,32 @@ class LicHelper {
 		if ( $wp_filesystem->is_dir( $package_directory ) ) {
 
 			$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );
-			if ( ! empty( $package_paths ) ) {
-				foreach ( $package_paths as $package_path ) {
-					$package = self::get_package_by_path( $package_path );
-					$meta    = $package->getMetadata();
-					$size = (float) ( $package->getFileSize() / WPPUS_MB_TO_B );
+            if (!empty($package_paths)) {
+                foreach ($package_paths as $package_path) {
+                    $package = self::get_package_by_path($package_path);
+                    $meta = $package->getMetadata();
+                    $size = (float) ($package->getFileSize() / WPPUS_MB_TO_B);
 
-					$packages[ $meta['slug'] ] = [
-						'name'               => $meta['name'],
-						'version'            => $meta['version'],
-						'type'               => isset( $meta['details_url'] ) ? __( 'Theme', 'wppus' ) : __( 'Plugin', 'wppus' ),
-						'last_updated'       => $meta['last_updated'],
-						'file_name'          => $meta['slug'] . '.zip',
-						'file_path'          => $package_path,
-						'file_size'          => number_format( $size, 2, '.', '' ) . ' MB',
-						'file_last_modified' => $package->getLastModified(),
+                    $packages[$meta['slug']] = [
+                        'name'               => $meta['name'],
+                        'version'            => $meta['version'],
+                        'type'               => isset($meta['details_url']) ? __('Theme', 'wppus') : __('Plugin',
+                            'wppus'),
+                        'last_updated'       => $meta['last_updated'],
+                        'file_name'          => $meta['slug'].'.zip',
+                        'file_path'          => $package_path,
+                        'file_size'          => number_format($size, 2, '.', '').' MB',
+                        'file_last_modified' => $package->getLastModified(),
 
-						'slug'               => $meta['slug'],
-						'tested'             => $meta['tested'] ?? '',
-						'change_log'         => $meta['sections']['changelog'] ?? '',
-						'description'        => $meta['sections']['description'] ?? '',
-					];
+                        'slug'        => $meta['slug'],
+                        'tested'      => $meta['tested'] ?? '',
+                        'change_log'  => $meta['sections']['changelog'] ?? '',
+                        'description' => $meta['sections']['description'] ?? '',
+                    ];
 
-					set_site_transient('wc_pus_' . $meta['slug'], $packages[ $meta['slug'] ], 60*60*3);
-				}
-			}
+                    set_site_transient('wc_pus_'.$meta['slug'], $packages[$meta['slug']], 60 * 60 * 3);
+                }
+            }
 		}
 
 		if(!empty($slug) && key_exists($slug, $packages)){
