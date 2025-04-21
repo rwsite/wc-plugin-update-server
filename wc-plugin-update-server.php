@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     WC PUS integration
+ * Plugin Name:     WooCommerce and Plugin Update Server integration
  * Plugin URI:      http://rwsite.ru
  * Description:     WooCommerce and WP Packages Update Server integration
  * Version:         1.0.9
