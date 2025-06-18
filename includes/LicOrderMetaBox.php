@@ -1,4 +1,7 @@
 <?php
+
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 /**
  * Render and handler WC Order meta-box for manage licenses.
  */
@@ -19,10 +22,9 @@ final class LicOrderMetaBox
         add_filter('woocommerce_admin_order_preview_get_order_details', [$this, 'order_preview_add_data'], 8, 2);
 
         // Add licences data to Order table
-        // add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'add_order_meta'], 10, 1 );
 
         // Order save action. metabox handler
-        add_action('save_post', [$this, 'save'], 60, 2);
+        add_action('woocommerce_process_shop_order_meta', [$this, 'save'], 60, 2);
     }
 
     /**
@@ -30,30 +32,21 @@ final class LicOrderMetaBox
      */
     public function add_meta_boxes()
     {
-        $screen = get_current_screen();
-        $screen_id = $screen ? $screen->id : '';
-        foreach (wc_get_order_types('order-meta-boxes') as $type) {
-            $order_type_object = get_post_type_object($type);
-            if ('shop_order' === $order_type_object->name) {
-                add_meta_box('licence', __('Manage licences', 'wc-pus'), [$this, 'render_meta_box' ], $type, 'side', 'default');
-            }
-        }
+        $screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? wc_get_page_screen_id('shop-order')
+            : 'shop_order';
+        add_meta_box('licence', __('Manage licences', 'wc-pus'), [$this, 'render_meta_box'], $screen, 'side', 'default');
     }
 
     /**
      * Render meta-box on admin order page
-     *
-     * @param WP_Post $post
      */
-    public function render_meta_box(WP_Post $post)
+    public function render_meta_box($order_or_post_id)
     {
-        global $theorder;
+        $order = ( $order_or_post_id instanceof WP_Post )
+            ? wc_get_order( $order_or_post_id->ID )
+            : $order_or_post_id;
 
-        if (!is_object($theorder)) {
-            $theorder = wc_get_order($post->ID);
-        }
-
-        $order = $theorder;
         if(!$order){
             return;
         }
@@ -97,15 +90,19 @@ final class LicOrderMetaBox
     /**
      * Save meta box data. Save data form process
      *
-     * @see LicOrderMetaBox::add_lic_content()
+     * @param  int  $post_id  Post ID.
+     * @param  WP_Post|null|\Automattic\WooCommerce\Admin\Overrides\Order   $post
      *
-     * @param int $post_id Post ID.
+     * @see LicOrderMetaBox::add_lic_content()
      */
-    public static function save(int $post_id, WP_Post $post = null)
+    public static function save(int $post_id, $post = null)
     {
-        $post_id = absint($post_id);
 
-        if(false === self::save_validation($post_id, $post)){
+        /*if ($post && 'shop_order' !== $post->post_type) {
+            return;
+        }*/
+
+        if(false === self::save_validation($post_id)){
             return;
         }
 	    $product_id     = absint($_POST['lic_product_id']);
@@ -133,10 +130,12 @@ final class LicOrderMetaBox
 	        wp_die('WC Pus: saving error');
         }
 
-	    $meta = (array) get_post_meta($post_id, LicOrder::key, true);
+        $wc_order = wc_get_order($post_id);
+        $meta = $wc_order->get_meta(LicOrder::key);
         $meta[] = $result->id;
-
-        update_post_meta($post_id, LicOrder::key, $meta);
+        $meta = array_unique($meta);
+        $wc_order->update_meta_data(LicOrder::key, $meta);
+        $wc_order->save();
 
         if ($result) {
             $message = __('The license Key has been generated success', 'wc-pus');
@@ -147,7 +146,6 @@ final class LicOrderMetaBox
         }
 
         LicOrder::add_order_note($post_id, $message);
-
     }
 
 	/**
@@ -202,12 +200,12 @@ final class LicOrderMetaBox
 	/**
 	 * @return bool
 	 */
-    private static function save_validation($post_id, $post){
+    private static function save_validation($post_id){
 
 	    // $post_id and $post are required && Dont' save meta boxes for revisions or autosaves.
-	    if (empty($post_id) || defined('DOING_AUTOSAVE') || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {
+	    /*if (empty($post_id) || defined('DOING_AUTOSAVE') || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {
 		    return false;
-	    }
+	    }*/
 
 	    // Check the nonce.
 	    if (empty($_POST['woocommerce_meta_nonce']) || !wp_verify_nonce(wp_unslash($_POST['woocommerce_meta_nonce']), 'woocommerce_save_data')) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -256,8 +254,8 @@ final class LicOrderMetaBox
      */
     public function add_order_meta(WC_Order $order)
     {
-        $order_id = $order->get_id();
-        $licenses = get_post_meta($order_id, LicOrder::key, true);
+        $licenses = $order->get_meta(LicOrder::key, true);
+
         $licenses_enable = !empty($licenses);
          if ($licenses_enable): ?>
             <h3><?php _e('Licences', 'wc-pus')?></h3>
@@ -270,7 +268,7 @@ final class LicOrderMetaBox
             <div class="lic-list" style="<?php echo count($licenses) > 3 ? ' display:none;' : ''; ?>">
                 <?php if (!empty($licenses)) {
                     foreach ($licenses as $k => $lic) {
-                        $licence = self::get_license_by_id($lic['lic_id'] ?? $lic);
+                        $licence = self::get_license_by_id($lic['lic_id'] ?? null);
 	                    if (!empty($licence)) {
                             woocommerce_wp_text_input([
                                 'id'                => LicOrder::key . '[' . $k . ']',
@@ -285,7 +283,10 @@ final class LicOrderMetaBox
                 } ?>
             </div>
         <?php
+        else:
+             _e('licenses not found', 'wc-pus');
         endif;
+
         add_action('admin_footer', function () {
             ?>
             <script type="text/javascript">
@@ -366,7 +367,7 @@ final class LicOrderMetaBox
      */
     public function order_preview_add_data(array $args, WC_Order $order)
     {
-        $licenses = get_post_meta($order->get_id(), LicOrder::key, true);
+        $licenses = $order->get_meta( LicOrder::key, true);
 
         if (!empty($licenses)) {
             $string = '<h3>'. __('Licences', 'wc-pus') .':</h3>';
@@ -391,14 +392,14 @@ final class LicOrderMetaBox
      *
      * @return stdClass{id: int, license_key: string, max_allowed_domains: int, date_expiry: string, package_slug:string, package_type: string}
      */
-    public static function get_license_by_id($id)
+    public static function get_license_by_id(?int $id)
     {
         /** @var wpdb */
         global $wpdb;
 
         if(!empty($id)) {
-	        $result = $wpdb->get_results(
-                    $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE `id` = '%d'",$id ) );
+            $result = $wpdb->get_results(
+                $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}upserv_licenses WHERE `id` = '%d'",$id ) );
         }
 
         return $result[0] ?? null;

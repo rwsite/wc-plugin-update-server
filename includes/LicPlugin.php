@@ -1,20 +1,24 @@
 <?php
+
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+
 /**
  * main Plugin class
  */
 
 final class LicPlugin {
-
-	private static $instance;
+	private static ?LicPlugin $instance = null;
     public ?array $plugin_data;
     public string $version;
     public string $key;
     public string $locale;
     public string $name;
     public string $file;
+    public string $dir;
 
-	private function __construct() {
-		$this->file = WCPUS;
+    private function __construct() {
+		$this->file = wp_normalize_path(WCPUS);
+        $this->dir = wp_normalize_path(plugin_dir_path($this->file));
 		$this->get_plugin_data();
 		$this->includes();
 		$this->load_textdomain();
@@ -44,21 +48,14 @@ final class LicPlugin {
 	 * Include necessary files
 	 */
 	private function includes() {
+
 		// Get out if WC is not active
-		if ( ! function_exists( 'WC' ) || ! class_exists( 'WPPUS_License_Server' ) ) {
-			add_action( 'admin_notices', function () { ?>
-                <div class="notice notice-error is-dismissible"><p>
-                    <?php echo __( 'Woocommerce or WP Plugin Update Server is not activated. To work this plugin, you need to install and activate WooCommerce and WPPUS_License_Server plugins.',
-                        'wc-pus' ); ?>
-                </div>
-				<?php
-			} );
-			return;
+		if ( ! function_exists( 'WC' ) || ! class_exists( 'Anyape\UpdatePulse\Server\API\License_API' ) ) {
+			return add_action( 'admin_notices', fn() => include_once '../templates/notice-wc-not-found.php' );
 		}
 
-		( new LicProduct() )->add_actions();
-		( new LicOrder() )->add_actions();
-		( new LicHelper() )->add_actions();
+		( new LicProduct() )->add_actions(); // No deps
+        ( new LicOrder() )->add_actions();
 		( new LicOrderMetaBox() )->add_actions();
 
 		LicProlongation::I()->add_actions();

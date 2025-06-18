@@ -1,6 +1,7 @@
 <?php
 /**
- * Product Settings.
+ * Product Settings
+ * Настройка привязки товара к теме/плагину
  */
 
 // Exit if accessed directly
@@ -31,17 +32,21 @@ final class LicProduct
     }
 
     /**
-     * Show options values
+     * Show options values from post meta
      */
     public function show_options() {
-        global $woocommerce, $post;
+        global $product_object;
 
-        $post_id = $post->ID;
-        $licensing_enabled = (bool)get_post_meta($post_id, self::$licensing_enabled, true);
-        $sites_allowed = esc_attr(get_post_meta($post_id, self::$sites_allowed, true));
-        $licensing_renewal_period = esc_attr(get_post_meta($post_id, self::$renewal_period, true));
-        $product_type = esc_attr(get_post_meta($post_id, self::$type, true));
-        $product_slug = esc_attr(get_post_meta($post_id, self::$slug, true));
+        $product = $product_object;
+        if(!$product){
+            return new WP_Error('error', 'Product not found.');
+        }
+
+        $licensing_enabled = (bool)$product->get_meta(self::$licensing_enabled);
+        $sites_allowed = esc_attr($product->get_meta( self::$sites_allowed));
+        $licensing_renewal_period = esc_attr($product->get_meta(self::$renewal_period));
+        $product_type = esc_attr($product->get_meta(self::$type));
+        $product_slug = esc_attr($product->get_meta( self::$slug));
 
         $display = $licensing_enabled ? '' : ' style="display:none;"';
         ?>
@@ -64,13 +69,13 @@ final class LicProduct
                 <label for="licensing_renewal_period">
                     <?php _e('license renewal period(yearly). Enter 0 for lifetime.', 'wc-pus');?>
                 </label>
-                <input type="number" name="licensing_renewal_period" id="licensing_renewal_period" value="<?php echo (int)$licensing_renewal_period; ?>"  />
+                <input type="number" name="licensing_renewal_period" id="licensing_renewal_period" value="<?php echo (int) $licensing_renewal_period; ?>"  />
             </p>
             <p class="form-field">
                 <label for="sites_allowed">
                     <?php _e('How many sites can be activated trough a single license key?', 'wc-pus');?>
                 </label>
-                <input type="number" name="sites_allowed" class="small-text" value="<?php echo (int)$sites_allowed; ?>" />
+                <input type="number" name="sites_allowed" class="small-text" value="<?php echo (int) $sites_allowed; ?>" />
             </p>
             <p class="form-field">
                 <label for="type"><?php _e('Product type (plugin or theme).', 'wc-pus');?></label>
@@ -101,13 +106,14 @@ final class LicProduct
             'type'                     => self::$type,
             'slug'                     => self::$slug
         ];
-
+        $product = wc_get_product($post_id);
         foreach ($properties as $key => $name) {
             if (isset($_POST[$key])) {
                 $value = ($key === 'sites_allowed' && (int)$_POST[$key] <= 0) ? 1 : esc_html($_POST[$key]);
-                update_post_meta($post_id, $name, $value);
+                $product->update_meta_data($name, $value);
             }
         }
+        $product->save();
     }
 
     /**
@@ -115,7 +121,8 @@ final class LicProduct
      * @return bool
      */
     public static function get_licensing_enabled($product_id){
-         return boolval(get_post_meta($product_id, self::$licensing_enabled, true));
+        $product = wc_get_product($product_id);
+         return boolval($product->get_meta( self::$licensing_enabled));
     }
 
     /**
@@ -123,7 +130,8 @@ final class LicProduct
      * @return int
      */
     public static function get_sites_allowed($product_id){
-        return intval(get_post_meta($product_id, self::$sites_allowed, true));
+        $product = wc_get_product($product_id);
+        return intval($product->get_meta( self::$sites_allowed));
     }
 
     /**
@@ -131,7 +139,8 @@ final class LicProduct
      * @return int
      */
     public static function get_renewal_period($product_id){
-        return intval(get_post_meta($product_id, self::$renewal_period, true));
+        $product = wc_get_product($product_id);
+        return intval($product->get_meta( self::$renewal_period,));
     }
 
     /**
@@ -139,7 +148,8 @@ final class LicProduct
      * @return string
      */
     public static function get_type($product_id){
-        return (string)get_post_meta($product_id, self::$type, true);
+        $product = wc_get_product($product_id);
+        return (string)$product->get_meta(self::$type, true);
     }
 
     /**
@@ -147,6 +157,7 @@ final class LicProduct
      * @return string
      */
     public static function get_slug($product_id){
-        return (string)get_post_meta($product_id, self::$slug, true);
+        $product = wc_get_product($product_id);
+        return (string)$product->get_meta( self::$slug, true);
     }
 }
