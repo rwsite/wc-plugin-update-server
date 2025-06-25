@@ -31,9 +31,9 @@ final class LicOrder
     /**
      * Generate licences and save to order data
      */
-    public function create_license_keys( int $order_id, $old_status, $new_status, WC_Order $wc_order = null): void
+    public function create_license_keys(int $order_id, $old_status, $new_status, WC_Order $wc_order = null): void
     {
-        if( $new_status !== "completed" ) {
+        if ($new_status !== "completed") {
             return;
         }
 
@@ -172,7 +172,7 @@ final class LicOrder
         if (count($licenses) > 0) {
             $wc_order = wc_get_order($order_id);
             $wc_order->add_meta_data(LicOrder::key, $licenses, true);
-            $wc_order->update_meta_data(LicOrder::key, $licenses );
+            $wc_order->update_meta_data(LicOrder::key, $licenses);
 
             $message = __('License Key(s) generated', 'wc-pus');
             foreach ($licenses as $license) {
@@ -201,71 +201,167 @@ final class LicOrder
     {
         $wc_order = wc_get_order($order);
         $licenses = $wc_order->get_meta(LicOrder::key);
+        $licence_enabled = !empty($licenses) && count($licenses) > 0;
 
-        if (!empty($licenses) && count($licenses) != 0) {
-            $output = '';
-            if ($show_title) {
-                $output .= '<h2>'.__('Your Licenses', 'wc-pus').':</h2>';
+        if (!$licence_enabled) {
+            foreach ($order->get_items() as $item) {
+                $licence_enabled = '1' === wc_get_product($item->get_product_id())->get_meta('_wc_slm_licensing_enabled');
+                if ($licence_enabled) {
+                    break;
+                }
             }
-            $output .= '<table class="shop_table shop_table_responsive"><tr>';
-            $output .= '<th class="td">'.__('Expires', 'wc-pus').'</th>';
-            $output .= '<th class="td">'.__('Key', 'wc-pus').'</th>';
-            $output .= '<th class="td">'.__('Domain', 'wc-pus').'</th>';
-            $output .= '<th class="td">'.__('Download', 'wc-pus').'</th></tr>';
-
-            $output = apply_filters('wc_pus_table_header', $output, $licenses);
-
-            $lic_manager = new License_API();
-            foreach ($licenses as $license) {
-                /*
-                [id] => 187
-                [license_key] => 2f61e0aee14b77d84e35fe67008942a7
-                [max_allowed_domains] => 1
-                [allowed_domains] => []
-                [status] => pending
-                [owner_name] => Test
-                [email] => tech@rwsite.ru
-                [company_name] =>
-                [txn_id] => 4948
-                [date_created] => 2023-02-17
-                [date_renewed] => 2023-02-17
-                [date_expiry] => 2024-02-17
-                [package_slug] => woo-to-iiko
-                [package_type] => plugin
-                 */
-                $lic = (array) $lic_manager->read(['id' => $license['lic_id'] ?? $license]);
-                if (empty($lic)) {
-                    continue;
-                }
-
-                $lic['download'] = $this->generate_download_link($lic);
-                $html = '';
-                foreach ($lic['allowed_domains'] as $domain) {
-                    $html .= '<a href="https://'.$domain.'" target="_blank" class="domain">'.$domain.'</a><br>';
-                }
-
-                $output .= '<tr>';
-                $output .= '<td class="td">'.$lic['date_expiry'].'</td>';
-                $output .= '<td class="td">'.$lic['license_key'].'</td>';
-                $output .= '<td class="td">'.$html.'</td>';
-
-                if (strtotime($lic['date_expiry']) > time()) {
-
-                    $bs4['class'] = LicProlongation::I()->bs4 ? 'btn btn-primary' : 'button';
-                    $bs4['icon']  = LicProlongation::I()->bs4 ? '<i class="las la-cloud-download-alt"></i>' : '';
-
-                    $output .= '<td class="td"><a href="'.$lic['download'].'" 
-					target="_blank" class="'.$bs4['class'].' download">'.$bs4['icon'].$lic['package_slug'].'</a></td>';
-                } else {
-                    $output .= '<td class="td">'.__('Licence has expired', 'wc-pus').'</td>';
-                }
-                $output .= '</tr>';
-                $output .= '<tr><td colspan="2">'.LicProlongation::I()->render_renewal_checkout_link($lic).'</td></tr>';
-            }
-            $output .= '</table>';
         }
 
-        echo apply_filters('wc_pus_table', $output ?? '', $licenses, $order);
+        if (!$licence_enabled) {
+            return;
+        }
+
+        $output = '';
+        if ($show_title) {
+            $output .= '<h2>'.__('Your Licenses', 'wc-pus').':</h2>';
+        }
+        $output .= '<table class="shop_table shop_table_responsive"><tr>';
+        $output .= '<th class="td">'.__('Expires', 'wc-pus').'</th>';
+        $output .= '<th class="td">'.__('Key', 'wc-pus').'</th>';
+        $output .= '<th class="td">'.__('Domain', 'wc-pus').'</th>';
+        $output .= '<th class="td">'.__('Download', 'wc-pus').'</th></tr>';
+        //$output = apply_filters('wc_pus_table_header', $output, $licenses);
+
+        if (!empty($licenses)) {
+            $output = $this->print_wc_license($output, $licenses,);
+        } else {
+            // meta not found
+            $lic_manager = new License_API();
+            $query = [
+                'relationship' => 'AND', 'limit' => '0',
+                'offset'       => '0',
+                'order_by'     => 'date_created',
+                'criteria'     => [
+                    [
+                        'field'    => 'email',
+                        'value'    => wp_get_current_user()->user_email,
+                        'operator' => '='
+                    ],
+                ]
+            ];
+            $licenses = $lic_manager->browse(json_encode($query));
+            $output = $this->print_user_license($output, $licenses);
+        }
+        $output .= '</table>';
+
+        echo apply_filters('wc_pus_table', $output, $licenses, $order);
+    }
+
+    public function print_user_license($output, $licenses)
+    {
+
+        foreach ((array) $licenses as $key => $lic) {
+            if ('count' == $key) {
+                continue;
+            }
+            /**
+             * ["id"]=>
+             * string(3) "220"
+             * ["license_key"]=>
+             * string(32) "478d3642d44a35831f948e9446b080b3"
+             * ["max_allowed_domains"]=>
+             * int(1)
+             * ["allowed_domains"]=>
+             * array(1) {
+             * [0]=>
+             * string(19) "dev.yabudupirogi.ru"
+             * }
+             * ["status"]=>
+             * string(9) "activated"
+             * ["owner_name"]=>
+             * string(31) "Кантемир Татаров"
+             * ["email"]=>
+             * string(18) "kantemir@danifo.ru"
+             * ["company_name"]=>
+             * string(0) ""
+             * ["txn_id"]=>
+             * string(4) "5391"
+             * ["date_created"]=>
+             * string(10) "2024-12-15"
+             * ["date_renewed"]=>
+             * string(10) "2024-12-15"
+             * ["date_expiry"]=>
+             * string(10) "2025-12-15"
+             * ["package_slug"]=>
+             * string(8) "woo2iiko"
+             * ["package_type"]=>
+             * string(6) "plugin"
+             * ["hmac_key"]=>
+             * string(0) ""
+             * ["crypto_key"]=>
+             * string(0) ""
+             * ["data"]=>
+             * array(0) {
+             * }
+             */
+            $lic = (array) $lic;
+
+            $lic['download'] = $this->generate_download_link($lic);
+            $domain_list = '';
+            foreach ($lic['allowed_domains'] as $domain) {
+                $domain_list .= '<a href="https://'.$domain.'" target="_blank" class="domain">'.$domain.'</a><br>';
+            }
+
+            $output .= '<tr>';
+            $output .= '<td class="td">'.$lic['date_expiry'].'</td>';
+            $output .= '<td class="td">'.$lic['license_key'].'</td>';
+            $output .= '<td class="td">'.$domain_list.'</td>';
+
+            if (strtotime($lic['date_expiry']) > time()) {
+
+                $bs4['class'] = LicProlongation::I()->bs4 ? 'btn btn-primary' : 'button';
+                $bs4['icon'] = LicProlongation::I()->bs4 ? '<i class="las la-cloud-download-alt"></i>' : '';
+
+                $output .= '<td class="td"><a href="'.$lic['download'].'" 
+					target="_blank" class="'.$bs4['class'].' download">'.$bs4['icon'].$lic['package_slug'].'</a></td>';
+            } else {
+                $output .= '<td class="td">'.__('Licence has expired', 'wc-pus').'</td>';
+            }
+            $output .= '</tr>';
+            $output .= '<tr><td colspan="2">'.LicProlongation::I()->render_renewal_checkout_link($lic).'</td></tr>';
+        }
+        return $output;
+    }
+
+    public function print_wc_license($output, array $licenses)
+    {
+        $lic_manager = new License_API();
+        foreach ($licenses as $license) {
+            $lic = (array) $lic_manager->read(['id' => $license['lic_id'] ?? $license]);
+            if (empty($lic)) {
+                continue;
+            }
+
+            $lic['download'] = $this->generate_download_link($lic);
+            $html = '';
+            foreach ($lic['allowed_domains'] as $domain) {
+                $html .= '<a href="https://'.$domain.'" target="_blank" class="domain">'.$domain.'</a><br>';
+            }
+
+            $output .= '<tr>';
+            $output .= '<td class="td">'.$lic['date_expiry'].'</td>';
+            $output .= '<td class="td">'.$lic['license_key'].'</td>';
+            $output .= '<td class="td">'.$html.'</td>';
+
+            if (strtotime($lic['date_expiry']) > time()) {
+
+                $bs4['class'] = LicProlongation::I()->bs4 ? 'btn btn-primary' : 'button';
+                $bs4['icon'] = LicProlongation::I()->bs4 ? '<i class="las la-cloud-download-alt"></i>' : '';
+
+                $output .= '<td class="td"><a href="'.$lic['download'].'" 
+					target="_blank" class="'.$bs4['class'].' download">'.$bs4['icon'].$lic['package_slug'].'</a></td>';
+            } else {
+                $output .= '<td class="td">'.__('Licence has expired', 'wc-pus').'</td>';
+            }
+            $output .= '</tr>';
+            $output .= '<tr><td colspan="2">'.LicProlongation::I()->render_renewal_checkout_link($lic).'</td></tr>';
+        }
+        return $output;
     }
 
     /**
@@ -279,7 +375,7 @@ final class LicOrder
             $output = '';
 
             // Check if licenses were generated
-            $licenses = $order->get_meta(LicOrder::key );
+            $licenses = $order->get_meta(LicOrder::key);
 
             if ($licenses && count($licenses) != 0) {
                 $output = '<h3>'.__('Your Licenses', 'wc-pus').':</h3><table><tr>
@@ -313,11 +409,8 @@ final class LicOrder
 
     /**
      * Render link to download file
-     *
-     * @param  array  $lic
-     * @return string
      */
-    private function generate_download_link(array $lic)
+    private function generate_download_link(array $lic): string
     {
         $args = [
             'uid'          => get_current_user_id(),
