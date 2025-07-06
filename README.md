@@ -1,5 +1,4 @@
-# wc-plugin-update-server
-Woocommerce and UpdatePulse Server integration.
+# Woocommerce and UpdatePulse Server integration.
 Simple and powerfully!
 Licenses are created automatically after payment for the order. The plugin provides the ability to renew the license.
 
@@ -11,9 +10,9 @@ https://github.com/woocommerce/woocommerce
 
 ## Screenshots
 
-Plugin create additional settings for WP PUS plugin.
+Plugin create additional settings for UpdatePulse plugin.
 
-![Settings](https://i.imgur.com/HcgLhFD.jpeg)
+![Settings](https://i.imgur.com/XTLW8lc.png)
 
 #### WC Product settings. admin part
 ![Product page](https://i.imgur.com/Lyh0gBe.jpeg)
