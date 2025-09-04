@@ -1,6 +1,7 @@
 <?php
 
 use Anyape\UpdatePulse\Server\API\License_API;
+use Anyape\UpdatePulse\Server\Manager\Package_Manager;
 
 /**
  * Manager
@@ -23,8 +24,8 @@ final class LicOrder
         add_action('woocommerce_order_details_before_order_table', [$this, 'print_order_meta'], 10, 1);
 
         // download package
-        if (isset($_GET['package_slug']) && (isset($_GET['email']) || isset($_GET['uid']))) {
-            $this->download_package();
+        if (isset($_GET['package_slug'], $_GET['uid'])) {
+            LicOrder::download_package();
         }
     }
 
@@ -418,7 +419,7 @@ final class LicOrder
             'order_id'     => $lic['txn_id'],
             'lic_id'       => $lic['id']
         ];
-        return get_site_url().'?'.http_build_query($args);
+        return get_home_url().'?'.http_build_query($args);
     }
 
     /**
@@ -428,13 +429,17 @@ final class LicOrder
      */
     public static function download_package(): void
     {
+        error_log('Download package initiated');
+        error_log('GET params: ' . print_r($_GET, true));
+
         $user_id = absint($_GET['uid']);
         $package_slug = $_GET['package_slug'];
         $order_id = (absint($_GET['order_id']));
         $lic_id = (absint($_GET['lic_id']));
 
-        if (empty($user_id)) { // WPCS: input var ok, CSRF ok.
-            self::download_error(__('Invalid download link.', 'woocommerce'));
+        if (empty($user_id) || get_current_user_id() !== $user_id ) {
+            error_log('User ID mismatch: current='.get_current_user_id().' vs requested='.$user_id);
+            self::download_error(__('Invalid download link. Or access denied.', 'woocommerce'));
         }
 
         if (!is_user_logged_in()) {
@@ -447,6 +452,11 @@ final class LicOrder
 
         $lic_manager = new License_API();
         $lic = $lic_manager->read(['id' => $lic_id]);
+
+        if (!$lic || empty($lic->package_slug)) {
+            error_log('License not found or invalid: ' . $lic_id);
+            self::download_error(__('Invalid license.'), '', 403);
+        }
 
         if (strtotime('midnight', time()) > strtotime($lic->date_expiry)) {
             self::download_error(__('Sorry, this download has expired', 'woocommerce'), '', 403);
